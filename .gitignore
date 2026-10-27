@@ -1,0 +1,10 @@
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+**/.vite/
+frontend/.env*
+backend/.env*
+!frontend/.env.example
+!backend/.env.example
+.DS_Store

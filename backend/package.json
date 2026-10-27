@@ -1,0 +1,11 @@
+{
+  "name": "tiem-ham-lay-backend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": { "dev": "tsx watch src/server.ts", "build": "tsc", "start": "node dist/server.js", "hash-password": "node scripts/hash-password.mjs" },
+  "dependencies": {
+    "cors": "^2.8.5", "dotenv": "^16.4.7", "express": "^5.1.0", "express-rate-limit": "^7.5.0", "helmet": "^8.1.0", "iconv-lite": "^0.6.3", "jsonwebtoken": "^9.0.2", "mongoose": "^8.18.0", "zod": "^4.1.5"
+  },
+  "devDependencies": { "@types/cors": "^2.8.19", "@types/express": "^5.0.3", "@types/jsonwebtoken": "^9.0.10", "@types/node": "^24.5.2", "tsx": "^4.19.2", "typescript": "^5.9.2" }
+}

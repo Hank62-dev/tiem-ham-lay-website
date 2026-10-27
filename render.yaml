@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: tiem-ham-lay-api
+    runtime: node
+    rootDir: backend
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: MONGODB_URI
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD_SALT
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_SENDER_EMAIL
+        sync: false
+      - key: SHOP_NOTIFICATION_EMAIL
+        value: tiemnhalayhandmade@gmail.com
+      - key: PUBLIC_SITE_URL
+        sync: false

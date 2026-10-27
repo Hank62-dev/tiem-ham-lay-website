@@ -1,0 +1,14 @@
+import { env } from '../config/env.js';
+
+const escape = (value: unknown) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char] || char));
+const money = (value: number) => `${new Intl.NumberFormat('vi-VN').format(value)} VNĐ`;
+
+export async function sendNewOrderEmail(order: any) {
+  if (!env.BREVO_API_KEY || !env.BREVO_SENDER_EMAIL || !env.SHOP_NOTIFICATION_EMAIL) return { skipped: true, sent: false };
+  const rows = order.items.map((item: any) => `<tr><td style="padding:12px 0;border-bottom:1px solid #eadbe0"><strong>${escape(item.name)}</strong><br><small>${item.quantity} sản phẩm · ${money(item.price)}</small></td><td align="right" style="border-bottom:1px solid #eadbe0">${money(item.lineTotal)}</td></tr>`).join('');
+  const gift = order.gift?.enabled ? `<div style="margin-top:16px;padding:14px;background:#fff8ce;border-radius:12px"><strong>Quà tặng cho ${escape(order.gift.recipientName || 'người thương')}</strong><br>${escape(order.gift.wish || '')}</div>` : '';
+  const html = `<!doctype html><html lang="vi"><body style="margin:0;background:#f5f1e6;color:#000;font:15px Arial,sans-serif"><main style="max-width:680px;margin:24px auto;background:#fff;padding:28px;border-radius:24px"><p style="color:#c60405;font-weight:bold;letter-spacing:2px">TIỆM HAM LẦY · ĐƠN MỚI</p><h1 style="margin:0 0 8px;color:#0e3dc8">${escape(order.orderCode)}</h1><p>${new Date(order.createdAt).toLocaleString('vi-VN')} · Chờ xác nhận thanh toán</p><hr style="border:0;border-top:1px solid #eadbe0"><p><strong>${escape(order.customer.fullName)}</strong><br>${escape(order.customer.phone)} · ${escape(order.customer.email || 'Không cung cấp')}<br>${escape(order.customer.address)}${order.customer.province ? `, ${escape(order.customer.province)}` : ''}</p><table width="100%" cellpadding="0" cellspacing="0">${rows}</table><p style="font-size:20px;text-align:right"><strong>Tổng: ${money(order.total)}</strong></p>${order.note ? `<p><strong>Ghi chú:</strong> ${escape(order.note)}</p>` : ''}${gift}<p style="margin-top:24px;background:#b8f8f4;padding:14px;border-radius:12px">Lưu ý: khách mới gửi đơn, shop cần đối soát chuyển khoản thủ công trước khi đánh dấu đã thanh toán.</p></main></body></html>`;
+  const response = await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', headers: { accept: 'application/json', 'api-key': env.BREVO_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify({ sender: { email: env.BREVO_SENDER_EMAIL, name: env.BREVO_SENDER_NAME }, to: [{ email: env.SHOP_NOTIFICATION_EMAIL }], subject: `Đơn mới ${order.orderCode} · Tiệm Ham Lầy`, htmlContent: html }) });
+  if (!response.ok) throw new Error(`Brevo HTTP ${response.status}`);
+  return { skipped: false, sent: true };
+}

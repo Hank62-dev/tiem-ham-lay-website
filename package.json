@@ -1,0 +1,14 @@
+{
+  "name": "tiem-ham-lay",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "dev": "concurrently \"pnpm --dir frontend dev\" \"pnpm --dir backend dev\"",
+    "build": "pnpm --dir frontend build && pnpm --dir backend build",
+    "frontend:dev": "pnpm --dir frontend dev",
+    "backend:dev": "pnpm --dir backend dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
