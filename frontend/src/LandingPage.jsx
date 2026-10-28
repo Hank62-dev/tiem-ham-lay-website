@@ -86,7 +86,7 @@ function AmbientMusic() {
   const [blocked, setBlocked] = useState(false);
   useEffect(() => {
     const audio = audioRef.current; if (!audio) return undefined;
-    audio.volume = .32; audio.muted = muted;
+    audio.volume = 1; audio.muted = muted;
     const tryPlay = () => { if (muted) return; audio.play().then(() => setBlocked(false)).catch(() => setBlocked(true)); };
     tryPlay();
     const resume = () => tryPlay();
