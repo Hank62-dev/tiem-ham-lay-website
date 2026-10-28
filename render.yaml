@@ -8,6 +8,8 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 22
+      - key: NODE_ENV
+        value: production
       - key: MONGODB_URI
         sync: false
       - key: CLIENT_URL
@@ -24,6 +26,8 @@ services:
         sync: false
       - key: BREVO_SENDER_EMAIL
         sync: false
+      - key: BREVO_SENDER_NAME
+        value: Tiệm Ham Lầy
       - key: SHOP_NOTIFICATION_EMAIL
         value: tiemnhalayhandmade@gmail.com
       - key: PUBLIC_SITE_URL

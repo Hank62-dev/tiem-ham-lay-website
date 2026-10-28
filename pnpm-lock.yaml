@@ -63,9 +63,15 @@ importers:
 
   frontend:
     dependencies:
+      '@bsmnt/scrollytelling':
+        specifier: ^0.3.3
+        version: 0.3.3(gsap@3.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@vitejs/plugin-react':
         specifier: ^5.0.4
         version: 5.2.0(supports-color@8.1.1)(vite@7.3.7(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.15))
+      gsap:
+        specifier: ^3.15.0
+        version: 3.15.0
       lucide-react:
         specifier: ^0.468.0
         version: 0.468.0(react@19.3.1)
@@ -75,6 +81,12 @@ importers:
       page-flip:
         specifier: ^2.0.7
         version: 2.0.7
+      page-mascot:
+        specifier: ^0.1.0
+        version: 0.1.0(react@19.3.1)
+      pullcord:
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react:
         specifier: ^19.1.1
         version: 19.3.1
@@ -176,6 +188,13 @@ packages:
   '@babel/types@7.29.11':
     resolution: {integrity: sha512-WCsemW40Cpc6gouC1SrY6PBaZ+oLRlEVY9XBvZBI7il/HyUrb2nJ505wE1MHEFyDZNnrWDEuy4jL50WVHfTTSQ==}
     engines: {node: '>=6.9.0'}
+
+  '@bsmnt/scrollytelling@0.3.3':
+    resolution: {integrity: sha512-2CqKzVP5osiWhU7g6/5u4nChT7VxHXuDTcX93zbvw0/Wn0TUtv10Yp5XNJ2qM979BQf0mNrR9XVEpqTVr37RLg==}
+    peerDependencies:
+      gsap: '>=3'
+      react: '>=18'
+      react-dom: '>=18'
 
   '@esbuild/aix-ppc64@0.28.2':
     resolution: {integrity: sha512-XExcO+dvLKvVtNTibSTBej1NCAbaGhWn9Ww1ZPx80qsahhPFe/8jgWP0IchNe0F3HwkU7n8ejhH8bjonqht8mQ==}
@@ -358,6 +377,59 @@ packages:
     cpu: [x64]
     os: [linux]
     libc: [glibc]
+
+  '@radix-ui/react-compose-refs@1.1.5':
+    resolution: {integrity: sha512-+48PbAAbq3didjJxa+OaWY2ZwgAKsNiRGyeHKszblZMQ+kcpd9pAaT11cMkGEie0vsOi3QdeTE6d5Fe3Gn61kA==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@radix-ui/react-portal@1.2.0':
+    resolution: {integrity: sha512-StX7xXnaRU41VvFtMm9zlhVGz8XF6GmWWTXftkQaY+tqVkbs/R9UmAp5mLzHHapk5hM9RMZQvO/3usyIP/g42g==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
+  '@radix-ui/react-primitive@2.2.0':
+    resolution: {integrity: sha512-HCTSPMNqv55Qk0IX4geJbpyXazmqulcimwuyjxTkKi29v+QZbG2Zho9BnbBq4YS2PF+KlNb2CXoLz66uUmblkg==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
+  '@radix-ui/react-slot@1.5.0':
+    resolution: {integrity: sha512-tyYd9ddPXAysAbdbD9eYxgwpCSv6f3PncqVSNKQFSR5lcJVLz3cb/pANDoYrLiHBpXv7skortyUgGUWsYuPPFQ==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@radix-ui/react-use-layout-effect@1.1.4':
+    resolution: {integrity: sha512-K20DkRkUwDnxEYMBPcg3Y6voLkEy5p5QQmszZgLngKKiC7dzBR/aEuK3w1qlx2JWDUNH6FluahYdgR3BP+QbYw==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   '@rolldown/pluginutils@1.0.0-rc.3':
     resolution: {integrity: sha512-eybk3TjzzzV97Dlj5c+XrBFW57eTNhzod66y9HrBlzJ6NsCrWCp/2kaPS3K9wJmurBC0Tdw4yPjXKZqlznim3Q==}
@@ -900,6 +972,9 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
+  gsap@3.15.0:
+    resolution: {integrity: sha512-dMW4CWBTUK1AEEDeZc1g4xpPGIrSf9fJF960qbTZmN/QwZIWY5wgliS6JWl9/25fpTGJrMRtSjGtOmPnfjZB+A==}
+
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
@@ -1198,6 +1273,12 @@ packages:
   page-flip@2.0.7:
     resolution: {integrity: sha512-96lQFUUz7r/LZzEUZJ3yBIMEKU9+m8HMFDzTvTdD6P7Ag/wXINjp9n0W7b4wanwnDbQETo4uNUoL3zMqpFxwGA==}
 
+  page-mascot@0.1.0:
+    resolution: {integrity: sha512-sw/BIqRKJ7nUfaxAGtmwQqm534I+lb2ZiXLDWZNexR1VF1RkmRl6BLVtj7hH+PrsiCPKtxHhA3IpVkXEm72FeA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: '>=18'
+
   parseurl@1.3.3:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
     engines: {node: '>= 0.8'}
@@ -1219,6 +1300,12 @@ packages:
   proxy-addr@2.0.8:
     resolution: {integrity: sha512-5nnx0yGyVUcY6t9RnWcARWtwT9F1D8O9rt08htPvnd49W1IgZtmLkhu9WfMzQj1cFxjHIO6connUNVW5k7AVyQ==}
     engines: {node: '>= 0.10'}
+
+  pullcord@0.1.0:
+    resolution: {integrity: sha512-v+3L1gP0+4jZWZV5y0lrTown+1xRGVIupd0wjNTbD8bQtatY6RQesA7/wT9Ge8eF/mLLVpK3Bw5Xjl1hRQWRxA==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
 
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -1588,6 +1675,17 @@ snapshots:
       '@babel/helper-string-parser': 7.29.11
       '@babel/helper-validator-identifier': 7.29.7
 
+  '@bsmnt/scrollytelling@0.3.3(gsap@3.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@radix-ui/react-portal': 1.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@radix-ui/react-slot': 1.5.0(react@19.3.1)
+      gsap: 3.15.0
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
+
   '@esbuild/aix-ppc64@0.28.2':
     optional: true
 
@@ -1691,6 +1789,32 @@ snapshots:
 
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     optional: true
+
+  '@radix-ui/react-compose-refs@1.1.5(react@19.3.1)':
+    dependencies:
+      react: 19.3.1
+
+  '@radix-ui/react-portal@1.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@radix-ui/react-primitive': 2.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@radix-ui/react-use-layout-effect': 1.1.4(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
+  '@radix-ui/react-primitive@2.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@radix-ui/react-slot': 1.5.0(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
+  '@radix-ui/react-slot@1.5.0(react@19.3.1)':
+    dependencies:
+      '@radix-ui/react-compose-refs': 1.1.5(react@19.3.1)
+      react: 19.3.1
+
+  '@radix-ui/react-use-layout-effect@1.1.4(react@19.3.1)':
+    dependencies:
+      react: 19.3.1
 
   '@rolldown/pluginutils@1.0.0-rc.3': {}
 
@@ -2198,6 +2322,8 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
+  gsap@3.15.0: {}
+
   has-flag@4.0.0: {}
 
   has-symbols@1.1.0: {}
@@ -2431,6 +2557,10 @@ snapshots:
 
   page-flip@2.0.7: {}
 
+  page-mascot@0.1.0(react@19.3.1):
+    dependencies:
+      react: 19.3.1
+
   parseurl@1.3.3: {}
 
   path-to-regexp@8.4.2: {}
@@ -2449,6 +2579,14 @@ snapshots:
     dependencies:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
+
+  pullcord@0.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+    dependencies:
+      motion: 12.43.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
 
   punycode@2.3.1: {}
 

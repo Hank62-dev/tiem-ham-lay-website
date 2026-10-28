@@ -2,6 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ArrowDown, ArrowRight, Check, ChevronLeft, ChevronRight, Copy, Facebook, Gift, Heart, Instagram, Mail, Menu, Minus, Music2, Plus, RotateCcw, Send, ShoppingBag, Sparkles, Trash2, Volume2, VolumeX, X } from 'lucide-react';
 import { PageFlip } from 'page-flip';
+import { Mascot } from 'page-mascot';
+import { PullCord } from 'pullcord';
+import 'pullcord/pullcord.css';
+import { Animation as ScrollAnimation, Root as ScrollRoot } from '@bsmnt/scrollytelling';
 import { createOrder, fetchProducts } from './api';
 
 const INSTAGRAM_URL = import.meta.env.VITE_INSTAGRAM_URL || 'https://www.instagram.com/tiemhamlay.handmade/';
@@ -30,6 +34,30 @@ const money = (value) => `${new Intl.NumberFormat('vi-VN').format(value)}đ`;
 const totalOf = (items) => items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 const readCart = () => { try { return JSON.parse(localStorage.getItem('hamlay-cart') || '[]'); } catch { return []; } };
 const categories = [{ id: 'all', label: 'Tất cả món xinh' }, ...GROUPS.map((group) => ({ id: group.category, label: group.label }))];
+
+function NightStars() {
+  const seededRandom = (seed) => { const value = Math.sin(seed * 12.9898 + 78.233) * 43758.5453; return value - Math.floor(value); };
+  const stars = Array.from({ length: 240 }, (_, index) => ({
+    x: seededRandom(index * 4 + 1) * 100,
+    y: seededRandom(index * 4 + 2) * 100,
+    size: .8 + seededRandom(index * 4 + 3) * 3.8,
+    delay: seededRandom(index * 4 + 4) * -5,
+    duration: 2.2 + seededRandom(index * 9 + 5) * 4.5,
+  }));
+  const falling = Array.from({ length: 58 }, (_, index) => ({
+    x: seededRandom(index * 5 + 101) * 100,
+    size: .8 + seededRandom(index * 5 + 102) * 2.8,
+    delay: seededRandom(index * 5 + 103) * -22,
+    duration: 12 + seededRandom(index * 5 + 104) * 16,
+  }));
+  return <div className="night-stars" aria-hidden="true">{stars.map((star, index) => <i className="night-star" key={`star-${index}`} style={{ '--star-x': `${star.x}%`, '--star-y': `${star.y}%`, '--star-size': `${star.size}px`, '--star-delay': `${star.delay}s`, '--star-duration': `${star.duration}s` }} />)}{falling.map((particle, index) => <i className="night-drift" key={`drift-${index}`} style={{ '--drift-x': `${particle.x}%`, '--drift-size': `${particle.size}px`, '--drift-delay': `${particle.delay}s`, '--drift-duration': `${particle.duration}s` }} />)}</div>;
+}
+
+function ThemePullCord({ dark, onPull }) {
+  const [hintSeen, setHintSeen] = useState(() => localStorage.getItem('hamlay-pullcord-hint-seen') === 'true');
+  const pull = () => { if (!hintSeen) { setHintSeen(true); localStorage.setItem('hamlay-pullcord-hint-seen', 'true'); } onPull(); };
+  return <><PullCord className="hamlay-pullcord" pulled={dark} onPull={pull} ariaLabel={dark ? 'Bật giao diện sáng' : 'Bật giao diện tối'} config={{ gravity: 1250, damping: 0.94, iterations: 20, stretchMax: 26 }} />{!hintSeen && <div className="pullcord-hint" aria-hidden="true"><span>pull the<br />cord!</span><b>➜</b></div>}</>;
+}
 
 function CharmCursor() {
   const reduce = useReducedMotion();
@@ -98,7 +126,7 @@ function Hero({ onExplore }) {
 
 function Story() {
   const reduce = useReducedMotion(); const cards = [['01', 'chọn hạt', 'theo mood của bạn', 'card-pink'], ['02', 'phối charm', 'một chút lầy, rất nhiều yêu', 'card-blue'], ['03', 'gói lời thương', 'gửi đi thật xinh', 'card-yellow']];
-  return <section className="section story-section story-section-upgraded" id="story"><div className="container story-grid"><div className="story-visual story-visual-upgraded"><div className="story-thread" />{cards.map(([number, title, copy, color], index) => <motion.div key={number} className={`story-card story-card-upgraded ${color}`} initial={reduce ? false : { opacity: 0, scale: .7 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-80px' }} transition={{ delay: index * .12, type: 'spring' }} whileHover={reduce ? {} : { y: -12, scale: 1.06 }}>{Array.from({ length: 5 }, (_, spark) => <i className="card-spark" key={spark} style={{ '--spark': spark }}>{spark % 2 ? '·' : '✦'}</i>)}<span>{number}</span><strong>{title}</strong><small>{copy}</small><b className="story-card-orbit" /></motion.div>)}</div><div className="story-copy"><p className="eyebrow">ĐÔI NÉT VỀ LẦY</p><h2>Tiệm nhỏ này làm ra những món đồ có <em>tính cách.</em></h2><p>Tiệm Ham Lầy được thành lập vào tháng 9 năm 2026 bởi một nhóm 9 bạn sinh viên trong dự án truyền thông số. Tụi mình làm vòng tay, dây đeo thẻ và móc khóa — những món nhỏ xíu nhưng đủ để mang theo một chút vui vẻ mỗi ngày.</p><p>Ngoài vòng xinh, giá hợp lý, tư vấn nhiệt tình, Lầy còn rất lầy lội. Nếu bạn không thích vòng vo, bạn có lẽ đang thích vòng tay nhà Lầy đó.</p><div className="quote-card"><span>“</span><p>Đeo một món phụ kiện vui vui, tự nhiên thấy hôm nay cũng đáng yêu hơn.”</p></div></div></div></section>;
+  return <section className="section story-section story-section-upgraded" id="story"><ScrollRoot disabled={reduce} start="top 78%" end="bottom 28%" scrub><div className="container story-grid"><div className="story-visual story-visual-upgraded"><div className="story-thread" />{cards.map(([number, title, copy, color], index) => <ScrollAnimation key={number} disabled={reduce} tween={{ start: index * 18, end: 44 + index * 18, fromTo: [{ opacity: 0, y: 70, rotate: index % 2 ? 11 : -11 }, { opacity: 1, y: 0, rotate: color === 'card-blue' ? 7 : color === 'card-yellow' ? -4 : -7 }] }}><motion.div className={`story-card story-card-upgraded ${color}`} whileHover={reduce ? {} : { y: -12, scale: 1.06 }}>{Array.from({ length: 5 }, (_, spark) => <i className="card-spark" key={spark} style={{ '--spark': spark }}>{spark % 2 ? '·' : '✦'}</i>)}<span>{number}</span><strong>{title}</strong><small>{copy}</small><b className="story-card-orbit" /></motion.div></ScrollAnimation>)}</div><div className="story-copy story-copy-depth"><ScrollAnimation disabled={reduce} tween={{ start: 0, end: 16, fromTo: [{ opacity: 0, y: -28, letterSpacing: '0.5em', filter: 'blur(8px)' }, { opacity: 1, y: 0, letterSpacing: '0.17em', filter: 'blur(0px)' }] }}><p className="eyebrow">ĐÔI NÉT VỀ LẦY</p></ScrollAnimation><h2><ScrollAnimation disabled={reduce} tween={{ start: 7, end: 28, fromTo: [{ opacity: 0, x: -90, rotateX: -70 }, { opacity: 1, x: 0, rotateX: 0 }] }}><span className="story-heading-line">Tiệm nhỏ này</span></ScrollAnimation><ScrollAnimation disabled={reduce} tween={{ start: 14, end: 35, fromTo: [{ opacity: 0, x: 90, rotateY: 34 }, { opacity: 1, x: 0, rotateY: 0 }] }}><span className="story-heading-line">làm ra những</span></ScrollAnimation><ScrollAnimation disabled={reduce} tween={{ start: 22, end: 43, fromTo: [{ opacity: 0, y: 60, scale: .76 }, { opacity: 1, y: 0, scale: 1 }] }}><span className="story-heading-line">món đồ có</span></ScrollAnimation><ScrollAnimation disabled={reduce} tween={{ start: 30, end: 52, fromTo: [{ opacity: 0, x: -65, rotateZ: -8 }, { opacity: 1, x: 0, rotateZ: 0 }] }}><span className="story-heading-line">tính <em>cách.</em></span></ScrollAnimation></h2><ScrollAnimation disabled={reduce} tween={{ start: 42, end: 64, fromTo: [{ opacity: 0, y: 55, rotateX: 12, filter: 'blur(5px)' }, { opacity: 1, y: 0, rotateX: 0, filter: 'blur(0px)' }] }}><p>Tiệm Ham Lầy được thành lập vào tháng 9 năm 2026 bởi một nhóm 9 bạn sinh viên trong dự án truyền thông số. Tụi mình làm vòng tay, dây đeo thẻ và móc khóa — những món nhỏ xíu nhưng đủ để mang theo một chút vui vẻ mỗi ngày.</p></ScrollAnimation><ScrollAnimation disabled={reduce} tween={{ start: 56, end: 76, fromTo: [{ opacity: 0, x: 80, rotateY: -12 }, { opacity: 1, x: 0, rotateY: 0 }] }}><p>Ngoài vòng xinh, giá hợp lý, tư vấn nhiệt tình, Lầy còn rất lầy lội. Nếu bạn không thích vòng vo, bạn có lẽ đang thích vòng tay nhà Lầy đó.</p></ScrollAnimation><ScrollAnimation disabled={reduce} tween={{ start: 70, end: 96, fromTo: [{ opacity: 0, y: 55, scale: .68, rotateZ: -8 }, { opacity: 1, y: 0, scale: 1, rotateZ: 0 }] }}><div className="quote-card"><span>“</span><p>Đeo một món phụ kiện vui vui, tự nhiên thấy hôm nay cũng đáng yêu hơn.”</p></div></ScrollAnimation></div></div></ScrollRoot></section>;
 }
 
 function ProductCard({ product, onAdd, onOpen, onInstagram }) {
@@ -120,7 +148,7 @@ function Products({ products, onAdd, onOpen, onInstagram }) {
 
 function CharmLab({ products, onOpen }) {
   const ref = usePointerParallax(); const featured = products.slice(0, 8); const [mixIndex, setMixIndex] = useState(0); const mix = products[mixIndex % Math.max(products.length, 1)];
-  return <section className="section charm-lab" id="charm-lab"><div className="container charm-lab-grid"><div><p className="eyebrow">GÓC THỬ VIBE</p><h2>Chạm vào một<br /><em>hạt lấp lánh.</em></h2><p>Rê chuột quanh các món đang bay lơ lửng để mở chi tiết. Bấm quả cầu ở giữa để lắc và đổi một món ngẫu nhiên — trên điện thoại cũng chơi được nha.</p><span className="charm-lab-tip"><RotateCcw size={15} /> bấm để mix vibe mới</span></div><div className="charm-stage-3d" ref={ref}><div className="charm-orbit orbit-x" /><div className="charm-orbit orbit-y" /><button type="button" className="charm-core" onClick={() => setMixIndex((value) => value + 1)} aria-label="Lắc để đổi món"><div className="core-shine" /><img src={mix?.image} alt="" /><span>lắc để<br /><b>đổi vibe</b></span></button><span className="charm-mix-label" aria-live="polite">đang mix · {mix?.name || 'món xinh'}</span><div className="charm-cards-orbit">{featured.map((product, index) => <button key={product.id} className={`flying-charm flying-charm-${index + 1}`} onClick={() => onOpen(product)} aria-label={`Mở ${product.name}`}><img src={product.image} alt="" /><i>✦</i></button>)}</div><span className="lab-star star-one">✦</span><span className="lab-star star-two">✧</span></div></div></section>;
+  return <section className="section charm-lab" id="charm-lab"><div className="container charm-lab-grid"><div><p className="eyebrow">GÓC THỬ VIBE</p><h2>Chạm vào một<br /><em>hạt lấp lánh.</em></h2><p>Rê chuột quanh các món đang bay lơ lửng để mở chi tiết. Bấm chú cáo ở giữa để lắc và đổi một món ngẫu nhiên — trên điện thoại cũng chơi được nha.</p><span className="charm-lab-tip"><RotateCcw size={15} /> bấm để mix vibe mới</span></div><div className="charm-stage-3d" ref={ref}><div className="charm-orbit orbit-x" /><div className="charm-orbit orbit-y" /><div className="charm-mascot-core" onClick={() => setMixIndex((value) => value + 1)}><Mascot directions="/mascots/fox-riso-directions.webp" reactions="/mascots/fox-riso-reactions.webp" size={180} label="cáo Riso của tiệm" /><span className="charm-mascot-prompt">chạm để<br /><b>đổi vibe</b></span></div><span className="charm-mix-label" aria-live="polite">đang mix · {mix?.name || 'món xinh'}</span><div className="charm-cards-orbit">{featured.map((product, index) => <button key={product.id} className={`flying-charm flying-charm-${index + 1}`} onClick={() => onOpen(product)} aria-label={`Mở ${product.name}`}><img src={product.image} alt="" /><i>✦</i></button>)}</div><span className="lab-star star-one">✦</span><span className="lab-star star-two">✧</span></div></div></section>;
 }
 
 function CatalogBook({ products }) {
@@ -142,7 +170,7 @@ function CatalogBook({ products }) {
     if (!bookRef.current) return undefined;
     let instance; let cancelled = false;
     try {
-      instance = new PageFlip(bookRef.current, { width: 420, height: 550, size: 'stretch', minWidth: 230, maxWidth: 560, minHeight: 310, maxHeight: 720, showCover: true, showPageCorners: false, disableFlipByClick: true, mobileScrollSupport: false, drawShadow: true, flippingTime: 1000, maxShadowOpacity: .42, usePortrait: false });
+      instance = new PageFlip(bookRef.current, { width: 420, height: 550, size: 'stretch', minWidth: 230, maxWidth: 560, minHeight: 310, maxHeight: 720, showCover: true, showPageCorners: false, disableFlipByClick: false, mobileScrollSupport: false, drawShadow: true, flippingTime: 1000, maxShadowOpacity: .42, usePortrait: false });
       const nodes = Array.from(bookRef.current.querySelectorAll('.book-page-new')); instance.loadFromHTML(nodes); instance.on('flip', (event) => { if (!cancelled) setPage(event.data); }); flipRef.current = instance;
     } catch (error) { console.error('Catalogue page-flip could not start', error); setFailed(true); }
     return () => { cancelled = true; try { instance?.destroy(); } catch { /* page-flip may already detach its canvas */ } flipRef.current = null; };
@@ -178,15 +206,106 @@ function CartDrawer({ items, setItems, onClose, onCheckout, onInstagram }) {
   return <motion.div className="drawer-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><motion.aside className="cart-drawer" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}><div className="drawer-head"><div><p className="eyebrow">TÚI ĐỒ XINH</p><h2>Giỏ hàng</h2></div><button onClick={onClose} aria-label="Đóng giỏ hàng"><X /></button></div>{items.length === 0 ? <div className="empty-cart"><div>♡</div><p>Giỏ đang trống trơn.<br />Thêm một món để tiệm gói niềm vui nha.</p><a href="#products" className="button button-blue" onClick={onClose}>Xem đồ xinh</a></div> : <><div className="cart-items">{items.map((item) => <div className="cart-item" key={item.id}><img src={item.image} alt="" /><div><strong>{item.name}</strong><small>{money(item.price)}</small><div className="quantity"><button onClick={() => update(item.id, -1)} aria-label="Giảm"><Minus size={12} /></button><span>{item.quantity}</span><button onClick={() => update(item.id, 1)} aria-label="Tăng"><Plus size={12} /></button></div></div><div className="cart-item-side"><b>{money(item.price * item.quantity)}</b><button className="cart-remove" onClick={() => remove(item.id)} aria-label={`Xóa ${item.name}`} title="Xóa sản phẩm"><Trash2 size={16} /></button></div></div>)}</div><div className="drawer-summary"><span>Tạm tính</span><strong>{money(totalOf(items))}</strong></div><button className="button button-red button-wide" onClick={onCheckout}>Điền form đặt hàng <ArrowRight size={16} /></button><button className="drawer-instagram" onClick={() => onInstagram(items)}><Instagram size={16} /> Hỏi tiệm qua Instagram</button><p className="drawer-note">Bạn có thể xóa món bất kỳ bằng nút thùng rác nha.</p></>}</motion.aside></motion.div>;
 }
 
+function compressPaymentProof(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Không đọc được ảnh chuyển khoản. Bạn thử chọn ảnh khác nha.'));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error('Ảnh không hợp lệ. Bạn chọn ảnh chụp giao dịch rõ hơn nha.'));
+      image.onload = () => {
+        const maxSide = 1400;
+        const scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+        const data = canvas.toDataURL('image/jpeg', .78);
+        if (data.length > 2_400_000) return reject(new Error('Ảnh vẫn hơi nặng. Bạn chọn ảnh nhỏ hơn 8MB hoặc chụp lại gọn hơn nha.'));
+        resolve({ data, fileName: file.name, mimeType: 'image/jpeg' });
+      };
+      image.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function OrderModal({ items, onClose, onSuccess }) {
-  const [form, setForm] = useState({ fullName: '', phone: '', email: '', birthYear: '', gender: 'prefer-not-to-say', address: '', province: '', district: '', note: '', gift: false, recipientName: '', wish: '' }); const [error, setError] = useState(''); const [loading, setLoading] = useState(false); const set = (key, value) => setForm((current) => ({ ...current, [key]: value }));
-  const submit = async (event) => { event.preventDefault(); setError(''); if (form.fullName.trim().length < 2 || !form.phone.trim() || form.address.trim().length < 5) return setError('Bạn điền giúp tên, số điện thoại và địa chỉ nhận hàng nha.'); if (form.gift && !form.wish.trim()) return setError('Món quà có lời thì để lại một lời chúc nha.'); setLoading(true); try { const result = await createOrder({ items: items.map((item) => ({ productId: item.id, quantity: item.quantity })), customer: { fullName: form.fullName.trim(), phone: form.phone.trim(), email: form.email.trim(), ...(form.birthYear ? { birthYear: Number(form.birthYear) } : {}), gender: form.gender, address: form.address.trim(), province: form.province.trim(), district: form.district.trim() }, note: form.note.trim(), gift: { enabled: form.gift, ...(form.gift ? { recipientName: form.recipientName.trim(), wish: form.wish.trim() } : {}) } }, crypto.randomUUID()); onSuccess(result); } catch (requestError) { setError(requestError.message); } finally { setLoading(false); } };
-  return <motion.div className="modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><motion.div className="order-modal" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}><div className="modal-head"><div><p className="eyebrow">MỘT BƯỚC NỮA THÔI</p><h2>Gửi đơn cho tiệm</h2></div><button onClick={onClose} aria-label="Đóng form"><X /></button></div><div className="order-summary-mini">{items.map((item) => <span key={item.id}>{item.name} × {item.quantity}</span>)}<strong>{money(totalOf(items))}</strong></div><form onSubmit={submit}><div className="form-grid"><label>Họ và tên *<input value={form.fullName} onChange={(event) => set('fullName', event.target.value)} placeholder="Tên bạn để tiệm gọi cho thân mật" required /></label><label>Số điện thoại *<input value={form.phone} onChange={(event) => set('phone', event.target.value)} placeholder="09xx xxx xxx" inputMode="tel" required /></label><label>Email (nếu muốn)<input type="email" value={form.email} onChange={(event) => set('email', event.target.value)} placeholder="Để tiệm liên hệ khi cần" /></label><label>Tỉnh / thành<input value={form.province} onChange={(event) => set('province', event.target.value)} placeholder="Ví dụ: TP. Hồ Chí Minh" /></label><label>Quận / huyện<input value={form.district} onChange={(event) => set('district', event.target.value)} placeholder="Bạn đang ở đâu nè?" /></label><label>Năm sinh (không bắt buộc)<input type="number" min="1900" max="2026" value={form.birthYear} onChange={(event) => set('birthYear', event.target.value)} placeholder="Để trống cũng được" /></label></div><label>Địa chỉ nhận hàng *<input value={form.address} onChange={(event) => set('address', event.target.value)} placeholder="Số nhà, tên đường..." required /></label><label>Giới tính (không bắt buộc)<select value={form.gender} onChange={(event) => set('gender', event.target.value)}><option value="prefer-not-to-say">Không muốn cung cấp</option><option value="female">Nữ</option><option value="male">Nam</option><option value="other">Khác</option></select></label><label>Ghi chú đơn hàng<textarea value={form.note} onChange={(event) => set('note', event.target.value)} placeholder="Ví dụ: gọi trước khi giao giúp mình nha" maxLength={1000} /></label><label className="gift-toggle"><input type="checkbox" checked={form.gift} onChange={(event) => set('gift', event.target.checked)} /><span><Gift size={18} /> Tui muốn tặng món này cho bạn bè / người thân</span></label>{form.gift && <div className="gift-fields"><label>Tên người nhận<input value={form.recipientName} onChange={(event) => set('recipientName', event.target.value)} placeholder="Gửi đến ai đó thật đáng yêu" /></label><label>Lời chúc *<textarea value={form.wish} onChange={(event) => set('wish', event.target.value)} placeholder="Món quà nhỏ xíu, lời thương to thiệt to..." maxLength={500} required /></label><div className="wish-preview"><small>thiệp xem trước</small><p>{form.wish || 'Lời chúc của bạn sẽ nằm ở đây ✦'}</p></div></div>}{error && <p className="form-error">{error}</p>}<div className="payment-hint"><strong>Thanh toán sau khi gửi đơn</strong><span>Thông tin chuyển khoản và số tiền sẽ hiện ở màn hình xác nhận. Shop vẫn cần đối soát thủ công, nên “đã gửi đơn” chưa đồng nghĩa “đã thanh toán” nha.</span></div><button className="button button-red button-wide" disabled={loading}>{loading ? 'Đang gửi đơn...' : `Gửi đơn cho tiệm · ${money(totalOf(items))}`}<ArrowRight size={17} /></button></form></motion.div></motion.div>;
+  const total = totalOf(items);
+  const [step, setStep] = useState(1);
+  const [form, setForm] = useState({ fullName: '', phone: '', email: '', birthYear: '', gender: 'prefer-not-to-say', address: '', province: '', district: '', note: '', gift: false, recipientName: '', wish: '' });
+  const [proof, setProof] = useState(null);
+  const [proofName, setProofName] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const set = (key, value) => setForm((current) => ({ ...current, [key]: value }));
+  const validateForm = () => {
+    const currentYear = new Date().getFullYear();
+    if (form.fullName.trim().length < 2 || !form.phone.trim() || !form.birthYear || Number(form.birthYear) < 1900 || Number(form.birthYear) > currentYear || !form.gender || form.address.trim().length < 5) {
+      setError('Bạn điền giúp tên, số điện thoại, năm sinh, giới tính và địa chỉ nhận hàng nha.');
+      return false;
+    }
+    if (form.gift && !form.wish.trim()) {
+      setError('Món quà có lời thì để lại một lời chúc nha.');
+      return false;
+    }
+    return true;
+  };
+  const nextToPayment = (event) => {
+    event.preventDefault();
+    setError('');
+    if (validateForm()) setStep(2);
+  };
+  const chooseProof = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setError('');
+    if (!file.type.startsWith('image/')) {
+      setError('Bạn chọn giúp tiệm một file ảnh nha.');
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setError('Ảnh tối đa 8MB thôi nha.');
+      return;
+    }
+    try {
+      const compressed = await compressPaymentProof(file);
+      setProof(compressed);
+      setProofName(file.name);
+    } catch (requestError) {
+      setProof(null);
+      setProofName('');
+      setError(requestError.message);
+    }
+  };
+  const submitOrder = async (event) => {
+    event.preventDefault();
+    setError('');
+    if (!proof) {
+      setError('Bạn upload ảnh chuyển khoản trước rồi hãy xác nhận đơn nha.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const result = await createOrder({
+        items: items.map((item) => ({ productId: item.id, quantity: item.quantity })),
+        customer: { fullName: form.fullName.trim(), phone: form.phone.trim(), email: form.email.trim(), birthYear: Number(form.birthYear), gender: form.gender, address: form.address.trim(), province: form.province.trim(), district: form.district.trim() },
+        note: form.note.trim(),
+        gift: { enabled: form.gift, ...(form.gift ? { recipientName: form.recipientName.trim(), wish: form.wish.trim() } : {}) },
+        paymentProof: proof,
+      }, crypto.randomUUID());
+      onSuccess(result);
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  return <motion.div className="modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><motion.div className="order-modal checkout-modal" initial={{ opacity: 0, y: 18, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }}><div className="modal-head"><div><p className="eyebrow">{step === 1 ? 'BƯỚC 1 · THÔNG TIN' : 'BƯỚC 2 · XÁC NHẬN CHUYỂN KHOẢN'}</p><h2>{step === 1 ? 'Gửi đơn cho tiệm' : 'Chuyển khoản rồi gửi ảnh nha'}</h2></div><button onClick={onClose} aria-label="Đóng form"><X /></button></div><div className="checkout-progress"><span className={step === 1 ? 'is-active' : 'is-done'}>01 Thông tin</span><span className={step === 2 ? 'is-active' : ''}>02 Thanh toán</span></div>{step === 1 ? <form onSubmit={nextToPayment}><div className="order-summary-mini">{items.map((item) => <span key={item.id}>{item.name} × {item.quantity}</span>)}<strong>{money(total)}</strong></div><div className="form-grid"><label>Họ và tên *<input value={form.fullName} onChange={(event) => set('fullName', event.target.value)} placeholder="Tên bạn để tiệm gọi cho thân mật" required /></label><label>Số điện thoại *<input value={form.phone} onChange={(event) => set('phone', event.target.value)} placeholder="09xx xxx xxx" inputMode="tel" required /></label><label>Email (nếu muốn)<input type="email" value={form.email} onChange={(event) => set('email', event.target.value)} placeholder="Để tiệm liên hệ khi cần" /></label><label>Tỉnh / thành<input value={form.province} onChange={(event) => set('province', event.target.value)} placeholder="Ví dụ: TP. Hồ Chí Minh" /></label><label>Quận / huyện<input value={form.district} onChange={(event) => set('district', event.target.value)} placeholder="Bạn đang ở đâu nè?" /></label><label>Năm sinh *<input type="number" min="1900" max={new Date().getFullYear()} value={form.birthYear} onChange={(event) => set('birthYear', event.target.value)} placeholder="Ví dụ: 2000" required /></label></div><label>Địa chỉ nhận hàng *<input value={form.address} onChange={(event) => set('address', event.target.value)} placeholder="Số nhà, tên đường..." required /></label><label>Giới tính *<select value={form.gender} onChange={(event) => set('gender', event.target.value)} required><option value="prefer-not-to-say">Không muốn cung cấp</option><option value="female">Nữ</option><option value="male">Nam</option><option value="other">Khác</option></select></label><label>Ghi chú đơn hàng<textarea value={form.note} onChange={(event) => set('note', event.target.value)} placeholder="Ví dụ: gọi trước khi giao giúp mình nha" maxLength={1000} /></label><label className="gift-toggle"><input type="checkbox" checked={form.gift} onChange={(event) => set('gift', event.target.checked)} /><span><Gift size={18} /> Tui muốn tặng món này cho bạn bè / người thân</span></label>{form.gift && <div className="gift-fields"><label>Tên người nhận<input value={form.recipientName} onChange={(event) => set('recipientName', event.target.value)} placeholder="Gửi đến ai đó thật đáng yêu" /></label><label>Lời chúc *<textarea value={form.wish} onChange={(event) => set('wish', event.target.value)} placeholder="Món quà nhỏ xíu, lời thương to thiệt to..." maxLength={500} required /></label><div className="wish-preview"><small>thiệp xem trước</small><p>{form.wish || 'Lời chúc của bạn sẽ nằm ở đây ✦'}</p></div></div>}{error && <p className="form-error">{error}</p>}<div className="payment-hint"><strong>Bước sau là chuyển khoản</strong><span>Tiệm sẽ hiện QR, số tiền chính xác và chỗ upload ảnh giao dịch ngay sau đây.</span></div><button className="button button-red button-wide">Tiếp tục đến thanh toán <ArrowRight size={17} /></button></form> : <form onSubmit={submitOrder}><div className="payment-checkout-card"><div className="payment-checkout-copy"><p className="eyebrow">SỐ TIỀN CẦN CHUYỂN</p><strong>{money(total)}</strong><p>Chuyển đúng số tiền này giúp tiệm đối soát nhanh hơn nha.</p><div className="payment-account"><span>NGUYEN LE THU HA</span><b>0399799892</b><small>Nội dung gợi ý: HAMLAY {form.phone.slice(-4)}</small><button type="button" onClick={() => navigator.clipboard?.writeText('0399799892')}>Copy số tài khoản <Copy size={14} /></button></div></div><img className="payment-qr" src="/qr.jpg" alt="QR chuyển khoản của Tiệm Ham Lầy" /></div><div className="payment-proof-upload"><div><p className="eyebrow">GỬI ẢNH XÁC NHẬN</p><h3>Chuyển khoản xong, upload ảnh giao dịch nha ✦</h3><p>Ảnh chỉ dùng để shop đối chiếu thủ công. Bấm xác nhận đơn không có nghĩa hệ thống tự đánh dấu đã thanh toán.</p></div><label className="payment-proof-drop"><input type="file" accept="image/png,image/jpeg,image/webp" onChange={chooseProof} required /><span>{proof ? 'Đổi ảnh chuyển khoản' : 'Chọn ảnh chuyển khoản'}</span><small>{proof ? proofName : 'PNG, JPG hoặc WEBP · tối đa 8MB'}</small></label>{proof && <img className="payment-proof-preview" src={proof.data} alt="Ảnh chuyển khoản vừa chọn" />}</div>{error && <p className="form-error">{error}</p>}<div className="checkout-actions"><button type="button" className="button button-quiet" onClick={() => { setError(''); setStep(1); }}>← Sửa thông tin</button><button className="button button-red" disabled={loading}>{loading ? 'Đang gửi đơn...' : 'Xác nhận đã chuyển khoản · Gửi đơn'}<Check size={17} /></button></div></form>}</motion.div></motion.div>;
 }
 
 function SuccessModal({ result, onClose }) {
-  const [copied, setCopied] = useState(false); const copy = () => navigator.clipboard?.writeText('0399799892').then(() => setCopied(true));
-  return <motion.div className="modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><motion.div className="success-modal" initial={{ opacity: 0, scale: .94 }} animate={{ opacity: 1, scale: 1 }}><div className="success-icon"><Check /></div><p className="eyebrow">ĐÃ NHẬN ĐƠN RỒI NÈ</p><h2>Mã đơn <em>{result.orderCode}</em></h2><p>Tiệm sẽ kiểm tra thông tin và liên hệ nếu cần. Bạn chuyển khoản đúng số tiền bên dưới giúp tiệm nha.</p><div className="transfer-card"><img src="/qr.jpg" alt="Mã QR chuyển khoản của Tiệm Ham Lầy" /><div><strong>NGUYEN LE THU HA</strong><span>MB · 0399799892</span><button onClick={copy}><Copy size={15} /> {copied ? 'Đã copy số tài khoản' : 'Copy số tài khoản'}</button><small>Nội dung: {result.orderCode}</small></div></div><p className="micro-note">QR và tài khoản chỉ là hướng dẫn chuyển khoản. Hệ thống chưa tự xác minh giao dịch.</p><button className="button button-blue button-wide" onClick={onClose}>Đóng và tiếp tục ngắm đồ <ArrowRight size={17} /></button></motion.div></motion.div>;
+  return <motion.div className="modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 1 }}><motion.div className="success-modal" initial={{ opacity: 0, scale: .94 }} animate={{ opacity: 1, scale: 1 }}><div className="success-icon"><Check /></div><p className="eyebrow">ĐÃ NHẬN ĐƠN VÀ ẢNH RỒI NÈ</p><h2>Mã đơn <em>{result.orderCode}</em></h2><p>Tiệm đã nhận thông tin và ảnh chuyển khoản. Tụi mình sẽ đối soát giao dịch thủ công rồi liên hệ nếu cần nha.</p><div className="success-received"><span>Số tiền trong đơn</span><strong>{money(result.total)}</strong><small>Trạng thái thanh toán hiện tại: chờ đối soát</small></div><button className="button button-blue button-wide" onClick={onClose}>Đóng và tiếp tục ngắm đồ <ArrowRight size={17} /></button></motion.div></motion.div>;
 }
 
 function Footer() { return <footer className="site-footer"><div className="container footer-grid"><div><a href="#top" className="wordmark"><span className="wordmark-star">✦</span><span>tiệm ham lầy</span></a><p>Món quà nhỏ xíu,<br />lời thương to thiệt to.</p></div><div><small>ghé chơi với tiệm</small><a href="#products">Sản phẩm</a><a href="#catalog">Catalogue</a><a href="#gift">Tặng quà</a><a href="#faq">Hỏi đáp</a></div><div><small>tìm thấy tụi mình</small>{SOCIALS.map(({ label, href, icon: Icon }) => <a key={label} href={href} target="_blank" rel="noreferrer"><Icon size={15} /> {label}</a>)}<span><Mail size={15} /> tiemnhalayhandmade@gmail.com</span></div></div><div className="container footer-bottom"><span>© 2026 Tiệm Ham Lầy</span><span>làm bằng tay và một chút lầy ♡</span></div></footer>; }
@@ -198,12 +317,13 @@ function InstagramToast({ items, onClose }) {
 }
 
 export default function LandingPage() {
-  const [products, setProducts] = useState(FALLBACK_PRODUCTS); const [cart, setCart] = useState(readCart); const [drawer, setDrawer] = useState(false); const [detail, setDetail] = useState(null); const [orderOpen, setOrderOpen] = useState(false); const [success, setSuccess] = useState(null); const [insta, setInsta] = useState(null);
+  const [dark, setDark] = useState(() => localStorage.getItem('hamlay-theme') === 'dark'); const [products, setProducts] = useState(FALLBACK_PRODUCTS); const [cart, setCart] = useState(readCart); const [drawer, setDrawer] = useState(false); const [detail, setDetail] = useState(null); const [orderOpen, setOrderOpen] = useState(false); const [success, setSuccess] = useState(null); const [insta, setInsta] = useState(null);
   useEffect(() => { fetchProducts().then((data) => { if (Array.isArray(data) && data.length) setProducts(data); }).catch(() => {}); }, []);
+  useEffect(() => { document.documentElement.dataset.theme = dark ? 'dark' : 'light'; localStorage.setItem('hamlay-theme', dark ? 'dark' : 'light'); return () => { delete document.documentElement.dataset.theme; }; }, [dark]);
   useEffect(() => { localStorage.setItem('hamlay-cart', JSON.stringify(cart)); }, [cart]);
   const add = (product, quantity = 1) => { setCart((current) => { const found = current.find((item) => item.id === product.id); return found ? current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item) : [...current, { ...product, quantity }]; }); setDrawer(true); };
   const openInstagram = (items) => { const message = items.map((item) => `Tui muốn đặt ${item.name} × ${item.quantity || 1}, tư vấn giúp mình nhé`).join('\n'); navigator.clipboard?.writeText(message).catch(() => {}); window.open(INSTAGRAM_URL, '_blank', 'noopener,noreferrer'); setInsta(items); };
   const count = useMemo(() => cart.reduce((sum, item) => sum + item.quantity, 0), [cart]);
   const jumpToProducts = () => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
-  return <><CharmCursor /><AmbientMusic /><Navigation count={count} onCart={() => setDrawer(true)} /><main><Hero onExplore={jumpToProducts} /><Story /><CatalogBook products={products} /><Products products={products} onAdd={add} onOpen={setDetail} onInstagram={openInstagram} /><CharmLab products={products} onOpen={setDetail} /><GiftExperience onGift={jumpToProducts} /><HowToOrder /><section className="payment-band"><div className="container payment-band-inner"><Sparkles size={24} /><span><strong>Chuyển khoản rõ ràng, kiểm tra thủ công.</strong> Gửi đơn không tự động đánh dấu đã thanh toán.</span><a href="#how">Xem quy trình <ArrowRight size={15} /></a></div></section><GalleryContact /><FAQ /></main><Footer /><AnimatePresence>{drawer && <CartDrawer items={cart} setItems={setCart} onCheckout={() => { setDrawer(false); setOrderOpen(true); }} onClose={() => setDrawer(false)} onInstagram={openInstagram} />}{detail && <ProductDetail product={detail} onClose={() => setDetail(null)} onAdd={add} onInstagram={openInstagram} />}{orderOpen && <OrderModal items={cart} onClose={() => setOrderOpen(false)} onSuccess={(result) => { setCart([]); setOrderOpen(false); setSuccess(result); }} />}{success && <SuccessModal result={success} onClose={() => setSuccess(null)} />}{insta && <InstagramToast items={insta} onClose={() => setInsta(null)} />}</AnimatePresence></>;
+  return <div className={`site-shell ${dark ? 'theme-dark' : ''}`}><NightStars /><ThemePullCord dark={dark} onPull={() => setDark((value) => !value)} /><CharmCursor /><AmbientMusic /><Navigation count={count} onCart={() => setDrawer(true)} /><main><Hero onExplore={jumpToProducts} /><Story /><CatalogBook products={products} /><Products products={products} onAdd={add} onOpen={setDetail} onInstagram={openInstagram} /><CharmLab products={products} onOpen={setDetail} /><GiftExperience onGift={jumpToProducts} /><HowToOrder /><section className="payment-band"><div className="container payment-band-inner"><Sparkles size={24} /><span><strong>Chuyển khoản rõ ràng, kiểm tra thủ công.</strong> Gửi đơn không tự động đánh dấu đã thanh toán.</span><a href="#how">Xem quy trình <ArrowRight size={15} /></a></div></section><GalleryContact /><FAQ /></main><Footer /><AnimatePresence>{drawer && <CartDrawer items={cart} setItems={setCart} onCheckout={() => { setDrawer(false); setOrderOpen(true); }} onClose={() => setDrawer(false)} onInstagram={openInstagram} />}{detail && <ProductDetail product={detail} onClose={() => setDetail(null)} onAdd={add} onInstagram={openInstagram} />}{orderOpen && <OrderModal items={cart} onClose={() => setOrderOpen(false)} onSuccess={(result) => { setCart([]); setOrderOpen(false); setSuccess(result); }} />}{success && <SuccessModal result={success} onClose={() => setSuccess(null)} />}{insta && <InstagramToast items={insta} onClose={() => setInsta(null)} />}</AnimatePresence></div>;
 }

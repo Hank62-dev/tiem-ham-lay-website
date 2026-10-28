@@ -1,8 +1,10 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
-dotenv.config({ path: '.env.development' });
+// Load the base file first. A local .env.development file may contain blank
+// placeholders, so it must not erase values already configured in .env.
 dotenv.config();
+dotenv.config({ path: '.env.development', override: false });
 
 const schema = z.object({
   PORT: z.coerce.number().default(5000), NODE_ENV: z.string().default('development'),
