@@ -107,9 +107,50 @@ function AmbientMusic() {
 function usePointerParallax() {
   const ref = useRef(null);
   useEffect(() => {
-    const node = ref.current; if (!node || !window.matchMedia('(pointer: fine)').matches) return undefined;
-    const move = (event) => { const rect = node.getBoundingClientRect(); node.style.setProperty('--mx', `${((event.clientX - rect.left) / rect.width - .5) * 2}`); node.style.setProperty('--my', `${((event.clientY - rect.top) / rect.height - .5) * 2}`); };
-    node.addEventListener('pointermove', move, { passive: true }); return () => node.removeEventListener('pointermove', move);
+    const node = ref.current; if (!node) return undefined;
+    let activePointerId = null;
+    let frame = 0;
+    let nextPoint = { x: 0, y: 0 };
+    let currentPoint = { x: 0, y: 0 };
+    const move = (event) => {
+      if (event.pointerType === 'touch' && activePointerId !== null && event.pointerId !== activePointerId) return;
+      const rect = node.getBoundingClientRect();
+      nextPoint = {
+        x: Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width - .5) * 2)),
+        y: Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height - .5) * 2)),
+      };
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        currentPoint.x += (nextPoint.x - currentPoint.x) * .28;
+        currentPoint.y += (nextPoint.y - currentPoint.y) * .28;
+        node.style.setProperty('--mx', currentPoint.x.toFixed(3));
+        node.style.setProperty('--my', currentPoint.y.toFixed(3));
+        frame = 0;
+        if (Math.abs(nextPoint.x - currentPoint.x) > .01 || Math.abs(nextPoint.y - currentPoint.y) > .01) move({ clientX: rect.left + (nextPoint.x + 1) * rect.width / 2, clientY: rect.top + (nextPoint.y + 1) * rect.height / 2, pointerType: 'synthetic', pointerId: -1 });
+      });
+    };
+    const down = (event) => {
+      if (event.pointerType === 'touch') activePointerId = event.pointerId;
+      move(event);
+    };
+    const end = (event) => {
+      if (event.pointerType === 'touch' && event.pointerId === activePointerId) activePointerId = null;
+      nextPoint = { x: 0, y: 0 };
+      move({ clientX: node.getBoundingClientRect().left + node.getBoundingClientRect().width / 2, clientY: node.getBoundingClientRect().top + node.getBoundingClientRect().height / 2, pointerType: 'synthetic', pointerId: -1 });
+    };
+    node.addEventListener('pointerdown', down, { passive: true });
+    node.addEventListener('pointermove', move, { passive: true });
+    node.addEventListener('pointerup', end, { passive: true });
+    node.addEventListener('pointercancel', end, { passive: true });
+    node.addEventListener('pointerleave', end, { passive: true });
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      node.removeEventListener('pointerdown', down);
+      node.removeEventListener('pointermove', move);
+      node.removeEventListener('pointerup', end);
+      node.removeEventListener('pointercancel', end);
+      node.removeEventListener('pointerleave', end);
+    };
   }, []);
   return ref;
 }
