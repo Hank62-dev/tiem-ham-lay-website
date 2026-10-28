@@ -60,25 +60,76 @@ function ThemePullCord({ dark, onPull }) {
   return <><PullCord className="hamlay-pullcord" pulled={dark} onPull={pull} ariaLabel={dark ? 'Bật giao diện sáng' : 'Bật giao diện tối'} config={{ gravity: 1250, damping: 0.94, iterations: 20, stretchMax: 26 }} />{!hintSeen && <div className="pullcord-hint" aria-hidden="true"><span>pull the<br />cord!</span><b>➜</b></div>}</>;
 }
 
+// Surfaces that already react to taps; a double-tap on them must keep working as before.
+const CURSOR_BLOCKERS = 'a,button,input,textarea,select,label,summary,[role="button"],.stf__parent,.site-nav,.hamlay-pullcord,.music-toggle,.charm-mascot-core,.modal-backdrop,.drawer-backdrop,.toast';
+const announceCursor = (x, y, active) => window.dispatchEvent(new CustomEvent('hamlay-cursor', { detail: { x, y, active } }));
+
 function CharmCursor() {
   const reduce = useReducedMotion();
   const particles = useRef([]);
+  const trail = useRef(null);
   useEffect(() => {
-    if (reduce || !window.matchMedia('(pointer: fine)').matches) return undefined;
-    document.body.classList.add('has-charm-cursor');
+    if (reduce) return undefined;
+    const fine = window.matchMedia('(pointer: fine)').matches;
     const points = Array.from({ length: 22 }, (_, index) => ({ x: -80 - index * 4, y: -80 - index * 4 }));
+    // Touch cursor glides slower than a mouse one so the run to the tapped spot is visible.
+    const lead = fine ? .34 : .13; const drag = fine ? .2 : .11; const floor = fine ? .08 : .045;
     let target = { x: -80, y: -80 }; let frame = 0;
-    const move = (event) => { target = { x: event.clientX, y: event.clientY }; };
     const tick = () => {
-      points.forEach((point, index) => { const follow = index === 0 ? 0.34 : Math.max(.08, 0.2 - index * 0.005); point.x += (target.x - point.x) * follow; point.y += (target.y - point.y) * follow; const node = particles.current[index]; if (node) { node.style.transform = `translate3d(${point.x}px,${point.y}px,0) scale(${1 - index * .03})`; node.style.opacity = String(Math.max(.16, 1 - index * .038)); } });
+      points.forEach((point, index) => { const follow = index === 0 ? lead : Math.max(floor, drag - index * (fine ? .005 : .003)); point.x += (target.x - point.x) * follow; point.y += (target.y - point.y) * follow; const node = particles.current[index]; if (node) { node.style.transform = `translate3d(${point.x}px,${point.y}px,0) scale(${1 - index * .03})`; node.style.opacity = String(Math.max(.16, 1 - index * .038)); } });
+      if (!fine) announceCursor(points[0].x, points[0].y, true);
       frame = requestAnimationFrame(tick);
     };
-    window.addEventListener('pointermove', move, { passive: true }); frame = requestAnimationFrame(tick);
-    return () => { cancelAnimationFrame(frame); window.removeEventListener('pointermove', move); document.body.classList.remove('has-charm-cursor'); };
+    if (fine) {
+      document.body.classList.add('has-charm-cursor');
+      const move = (event) => { target = { x: event.clientX, y: event.clientY }; };
+      window.addEventListener('pointermove', move, { passive: true }); frame = requestAnimationFrame(tick);
+      return () => { cancelAnimationFrame(frame); window.removeEventListener('pointermove', move); document.body.classList.remove('has-charm-cursor'); };
+    }
+    // Touch: no hover, so a double-tap on an empty spot summons the cursor and sends it running there.
+    const layer = trail.current; if (!layer) return undefined;
+    layer.classList.add('is-touch');
+    let live = false; let down = null; let lastTap = null; let swallow = false; let hideTimer = 0; let stopTimer = 0; let anchorY = 0;
+    const summon = (x, y) => {
+      clearTimeout(hideTimer); clearTimeout(stopTimer);
+      if (!live) { live = true; layer.classList.add('is-live'); points.forEach((point) => { point.x = -30; point.y = window.innerHeight + 30; }); }
+      target = { x, y }; anchorY = window.scrollY;
+      if (!frame) frame = requestAnimationFrame(tick);
+      hideTimer = setTimeout(dismiss, 5000);
+    };
+    function dismiss() {
+      if (!live) return;
+      live = false; layer.classList.remove('is-live'); announceCursor(0, 0, false);
+      stopTimer = setTimeout(() => { cancelAnimationFrame(frame); frame = 0; }, 450);
+    }
+    // The cursor is pinned to the screen, so real scrolling (not a tiny nudge) dismisses it.
+    const onScroll = () => { if (Math.abs(window.scrollY - anchorY) > 24) dismiss(); };
+    const onDown = (event) => { if (event.pointerType !== 'touch' || !event.isPrimary) return; down = { x: event.clientX, y: event.clientY, at: performance.now(), free: !event.target.closest?.(CURSOR_BLOCKERS) }; };
+    const onUp = (event) => {
+      if (event.pointerType !== 'touch' || !down) return;
+      const start = down; down = null; const now = performance.now();
+      if (!start.free || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 12 || now - start.at > 350) { lastTap = null; return; }
+      if (lastTap && now - lastTap.at < 400 && Math.hypot(event.clientX - lastTap.x, event.clientY - lastTap.y) < 48) { lastTap = null; swallow = true; summon(event.clientX, event.clientY); return; }
+      lastTap = { x: event.clientX, y: event.clientY, at: now };
+    };
+    const cancel = () => { down = null; lastTap = null; };
+    // A double-tap would otherwise select the word under the finger.
+    const onTouchEnd = (event) => { if (!swallow) return; swallow = false; if (event.cancelable) event.preventDefault(); };
+    window.addEventListener('pointerdown', onDown, { passive: true });
+    window.addEventListener('pointerup', onUp, { passive: true });
+    window.addEventListener('pointercancel', cancel, { passive: true });
+    window.addEventListener('touchend', onTouchEnd, { passive: false });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      clearTimeout(hideTimer); clearTimeout(stopTimer); cancelAnimationFrame(frame); announceCursor(0, 0, false);
+      layer.classList.remove('is-touch', 'is-live');
+      window.removeEventListener('pointerdown', onDown); window.removeEventListener('pointerup', onUp); window.removeEventListener('pointercancel', cancel);
+      window.removeEventListener('touchend', onTouchEnd); window.removeEventListener('scroll', onScroll);
+    };
   }, [reduce]);
   if (reduce) return null;
   const glyphs = ['✦', '✧', '⋆', '·', '✦', '˙', '✧', '⋆', '·', '✦', '✧', '·', '⋆', '✦', '˙', '✧', '·', '✦', '⋆', '✧', '·', '✦'];
-  return <div className="cursor-trail" aria-hidden="true">{glyphs.map((glyph, index) => <i key={index} ref={(node) => { particles.current[index] = node; }} className={index === 0 ? 'cursor-core' : 'cursor-dust'}>{glyph}</i>)}</div>;
+  return <div className="cursor-trail" ref={trail} aria-hidden="true">{glyphs.map((glyph, index) => <i key={index} ref={(node) => { particles.current[index] = node; }} className={index === 0 ? 'cursor-core' : 'cursor-dust'}>{glyph}</i>)}</div>;
 }
 
 function AmbientMusic() {
@@ -143,7 +194,16 @@ function usePointerParallax() {
     node.addEventListener('pointerup', end, { passive: true });
     node.addEventListener('pointercancel', end, { passive: true });
     node.addEventListener('pointerleave', end, { passive: true });
+    // The touch cursor (double-tap) has no real pointer events, so it announces its position instead.
+    let following = false;
+    const follow = (event) => {
+      const { x, y, active } = event.detail; const rect = node.getBoundingClientRect();
+      if (active && x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) { following = true; move({ clientX: x, clientY: y, pointerType: 'synthetic', pointerId: -1 }); }
+      else if (following) { following = false; end({ pointerType: 'synthetic', pointerId: -1 }); }
+    };
+    window.addEventListener('hamlay-cursor', follow);
     return () => {
+      window.removeEventListener('hamlay-cursor', follow);
       if (frame) cancelAnimationFrame(frame);
       node.removeEventListener('pointerdown', down);
       node.removeEventListener('pointermove', move);

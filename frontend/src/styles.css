@@ -490,3 +490,13 @@ input,textarea,select{border-color:#e8afbf}
   .stf__wrapper.--portrait .book-back>strong{font-size:clamp(1.7rem,9vw,2.6rem)}
   .stf__wrapper.--portrait .book-back>small{font-size:clamp(.58rem,2.8vw,.78rem)}
 }
+
+/* Touch cursor: summoned by a double-tap, so it stays hidden until then (it used to sit stacked at the top-left corner). */
+.cursor-trail.is-touch{transition:opacity .35s}
+.cursor-trail.is-touch:not(.is-live){opacity:0;visibility:hidden;transition:opacity .35s,visibility 0s .35s}
+@media (pointer:coarse){body{touch-action:manipulation}}
+/* Tilt follows the touch cursor on phones too; depth is shallow because Hero layers sit close to the screen edges. */
+@media (max-width:600px){
+  .hero-3d-scene{transform:rotateX(calc(var(--my,0) * -3deg)) rotateY(calc(var(--mx,0) * 4deg))}
+  .charm-stage-3d{transform:rotateX(calc(var(--my,0) * 5deg)) rotateY(calc(var(--mx,0) * 7deg))}
+}

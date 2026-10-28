@@ -175,7 +175,8 @@ Không đổi tên hoặc xóa một trong hai file. `Mascot` cần cả `direct
 - Không phụ thuộc hover để truy cập CTA.
 - Input phải có label/aria-label.
 - Giữ focus state.
-- Custom cursor chỉ chạy với pointer phù hợp.
+- Custom cursor chỉ chạy với pointer phù hợp. Trên cảm ứng (`pointer: coarse`), chạm đúp vào chỗ trống sẽ gọi con trỏ sao chạy tới điểm đó (`CharmCursor`); nó phát sự kiện `hamlay-cursor` để `usePointerParallax` nghiêng Hero/Thử vibe theo. Chạm đúp lên phần tử tương tác (`CURSOR_BLOCKERS`) thì không kích hoạt.
+- `page-mascot` tự tắt theo dõi con trỏ khi không có `(hover: hover) and (pointer: fine)`, nên mắt con cáo không bám theo con trỏ ảo trên điện thoại.
 - Animation phải có fallback `prefers-reduced-motion`.
 - Không dùng animation làm thay đổi vùng click của nút.
 
