@@ -363,10 +363,10 @@
   .hero-cutout-one { left: 12%; top: 24%; }
   .hero-cutout-two { right: -1%; top: 34%; }
   .hero-cutout-three { left: 27%; bottom: 3%; }
-  .hero-cutout-showcase .hero-cutout-one { top: -8%; width: clamp(260px, 70%, 355px); }
-  .hero-cutout-showcase .hero-cutout-two { right: -13%; top: 24%; width: clamp(260px, 70%, 355px); }
-  .hero-cutout-showcase .hero-cutout-three { bottom: -11%; width: clamp(260px, 70%, 355px); }
-  .hero-cutout-showcase::after { left: -13%; top: 24%; width: clamp(245px, 65%, 325px); }
+  .hero-cutout-showcase .hero-cutout-one { top: -8%; width: clamp(190px, 70%, 355px); }
+  .hero-cutout-showcase .hero-cutout-two { right: -4%; top: 24%; width: clamp(190px, 70%, 355px); }
+  .hero-cutout-showcase .hero-cutout-three { bottom: -11%; width: clamp(190px, 70%, 355px); }
+  .hero-cutout-showcase::after { left: -4%; top: 24%; width: clamp(180px, 65%, 325px); }
   .charm-stage-3d .charm-cutout-cards-orbit { width: min(315px, 92%) !important; height: min(315px, 92%) !important; }
   .charm-cards-orbit .flying-charm,
   .charm-cards-orbit .flying-charm:hover { width: 98px; height: 98px; }

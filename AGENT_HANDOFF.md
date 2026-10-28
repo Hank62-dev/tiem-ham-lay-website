@@ -128,7 +128,8 @@ Config quan trọng trong `CatalogBook`:
 - `showCover: true`.
 - `showPageCorners: false` để không tự gập khi hover.
 - `disableFlipByClick: false` để nút mũi tên và thao tác lật hoạt động.
-- `usePortrait: false` để mobile vẫn ưu tiên spread hai trang.
+- `usePortrait: true`: container hẹp hơn `2 × minWidth` (460px) thì sách chuyển sang 1 trang. Không đặt lại `false` — khi đó page-flip ép `min-width = 2 × minWidth` = 460px, lớn hơn container điện thoại nên sách tràn và bị cắt hai bên.
+- Chiều cao `.book-upgraded` ở mobile là `auto` (do `stf__wrapper` tự tính theo tỉ lệ trang); cỡ chữ riêng cho chế độ 1 trang nằm dưới selector `.stf__wrapper.--portrait` ở cuối `styles.css`.
 - Phải gọi `destroy()` trong cleanup.
 - Không bật lại `React.StrictMode` nếu chưa xử lý lifecycle của thư viện.
 

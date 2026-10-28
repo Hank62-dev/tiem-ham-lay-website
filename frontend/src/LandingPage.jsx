@@ -262,7 +262,7 @@ function CatalogBook({ products }) {
     if (!bookRef.current) return undefined;
     let instance; let cancelled = false;
     try {
-      instance = new PageFlip(bookRef.current, { width: 420, height: 550, size: 'stretch', minWidth: 230, maxWidth: 560, minHeight: 310, maxHeight: 720, showCover: true, showPageCorners: false, disableFlipByClick: false, mobileScrollSupport: false, drawShadow: true, flippingTime: 1000, maxShadowOpacity: .42, usePortrait: false });
+      instance = new PageFlip(bookRef.current, { width: 420, height: 550, size: 'stretch', minWidth: 230, maxWidth: 560, minHeight: 310, maxHeight: 720, showCover: true, showPageCorners: false, disableFlipByClick: false, mobileScrollSupport: false, drawShadow: true, flippingTime: 1000, maxShadowOpacity: .42, usePortrait: true });
       const nodes = Array.from(bookRef.current.querySelectorAll('.book-page-new')); instance.loadFromHTML(nodes); instance.on('flip', (event) => { if (!cancelled) setPage(event.data); }); flipRef.current = instance;
     } catch (error) { console.error('Catalogue page-flip could not start', error); setFailed(true); }
     return () => { cancelled = true; try { instance?.destroy(); } catch { /* page-flip may already detach its canvas */ } flipRef.current = null; };
