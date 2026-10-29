@@ -4,7 +4,7 @@ Website bán phụ kiện handmade với landing page tương tác, giỏ hàng,
 
 ## Cấu trúc
 
-- `frontend/`: React + Vite + Tailwind CSS + Motion + page-flip. Landing page và `/admin` dùng chung bundle, admin được bảo vệ ở backend.
+- `frontend/`: React + Vite + Tailwind CSS + Motion. Landing page và `/admin` dùng chung bundle, admin được bảo vệ ở backend.
 - `backend/`: Express + Mongoose + Zod + JWT. Backend là nguồn sự thật cho giá, tổng tiền, trạng thái đơn và trạng thái thanh toán.
 - `Ảnh chụp sản phẩm/`, `qr.jpg`: tài nguyên gốc được giữ nguyên. Một số ảnh thật được copy sang `frontend/public/products/` với tên ổn định để build.
 

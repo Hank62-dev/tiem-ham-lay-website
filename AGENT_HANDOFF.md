@@ -26,8 +26,8 @@ Mục tiêu chính là kết hợp landing page giàu animation với luồng mu
 │  │  ├─ api.js              # HTTP client frontend → backend
 │  │  └─ styles.css          # Design system và toàn bộ CSS
 │  └─ public/
-│     ├─ products/           # 29 ảnh sản phẩm đã chuẩn hóa tên
-│     ├─ mascots/            # Sprite sheet fox-riso
+│     ├─ products/           # 16 ảnh sản phẩm + combo-* + model-*
+│     ├─ brand/              # logo.png, mascot.png
 │     ├─ Download.mp3        # Nhạc nền
 │     └─ qr.jpg              # QR chuyển khoản thật
 ├─ backend/                  # Node.js + Express + TypeScript
@@ -53,9 +53,7 @@ Mục tiêu chính là kết hợp landing page giàu animation với luồng mu
 - Frontend: React 19 + Vite.
 - Styling: CSS hiện tại trong `frontend/src/styles.css`; Tailwind được cài nhưng phần landing chính đang dùng CSS design system hiện hữu.
 - Animation UI: `motion`.
-- Scroll storytelling: `@bsmnt/scrollytelling` + `gsap`.
-- Catalogue: `page-flip`.
-- Mascot: `page-mascot`.
+- Animation UI: `motion` (`gsap`, `@bsmnt/scrollytelling`, `page-flip`, `page-mascot`, `pullcord` đã gỡ khỏi dependency).
 - Backend: Node.js + Express + TypeScript.
 - Database: MongoDB + Mongoose.
 - Email: Brevo từ backend.
@@ -75,7 +73,7 @@ pnpm.cmd --dir backend build
 
 ### Entry và route
 
-`frontend/src/main.jsx` mount `<App />` và **không dùng `React.StrictMode`**. Lý do: `page-flip` có thao tác tự xóa mount node khi `destroy()`, StrictMode replay effect trong dev có thể gây màn hình trắng.
+`frontend/src/main.jsx` mount `<App />` và **không dùng `React.StrictMode`** (đã ổn định từ thời còn catalogue `page-flip`; chỉ bật lại sau khi test kỹ các effect của `CharmCursor` và `usePointerParallax`).
 
 `App.jsx` import `LandingPage.jsx`. Admin vẫn nằm trong `App.jsx`; không chuyển toàn bộ admin sang landing component nếu không cần thiết.
 
@@ -83,16 +81,15 @@ pnpm.cmd --dir backend build
 
 `LandingPage.jsx` hiện có các phần chính:
 
-- `Navigation`.
-- `Hero` với composition 2.5D, parallax pointer và sản phẩm thật.
-- `Story` với 3 card và scrollytelling riêng cho từng dòng nội dung.
+- `Navigation` (logo ở góc trái).
+- `Hero` với mascot, ảnh sản phẩm thật, parallax pointer và nút "Mua nhanh qua Instagram".
+- `Story` — giới thiệu thương hiệu, tên thương hiệu / tầm nhìn / sứ mệnh, thời gian hoạt động (animation bằng `motion` `whileInView`).
 - `Products` với filter, phân trang 9 sản phẩm/trang và product detail modal.
-- `CharmLab` với các card sản phẩm xoay quanh mascot fox-riso.
-- `CatalogBook` dùng `page-flip`.
+- `CharmLab` ("Thử vibe") với ảnh sản phẩm xoay quanh mascot.
 - `GiftExperience` với textarea lời chúc có thể chỉnh sửa.
 - `HowToOrder`.
-- `GalleryContact`.
-- `FAQ`.
+- `GalleryContact` (combo 20·10) và `ModelSection` (ảnh người mẫu; vòng tròn phóng to cổ tay theo toạ độ trong `MODEL_WRISTS`, thêm ảnh mới thì thêm toạ độ).
+- `Policy` (giao hàng, thanh toán/cọc, bảo hành) và `Contact` (Instagram + các kênh khác).
 - Cart drawer, checkout form, success modal và ambient music.
 
 ### Design tokens
@@ -105,70 +102,31 @@ Các màu thương hiệu nằm ở đầu `styles.css` dưới dạng CSS varia
 - `--ink`, `--muted`, `--line`.
 - `--cherry`, `--muli`.
 
-Font chính là Cherry Bomb One cho heading/brand; Muli cho body, form, giá và dữ liệu.
+Trong landing (`.site-shell`) `--blue` đã được đặt thành đen, `--cherry` trỏ về Muli, `--cream`/`--yellow` là vàng nhạt `#fbf8ce`. Các màu xanh cứng trong CSS đã được chuyển thành `var(--blue)` / `rgba(var(--blue-rgb), …)` để đổi theo ngữ cảnh.
 
-`styles.css` có nhiều block override ở cuối file vì đã xử lý nhiều breakpoint và bug visual trong quá trình build. Không xóa hàng loạt các override nếu chưa kiểm tra desktop, mobile và page-flip.
+`styles.css` có nhiều block override ở cuối file vì đã xử lý nhiều breakpoint và bug visual trong quá trình build. Không xóa hàng loạt các override nếu chưa kiểm tra desktop và mobile.
 
 ### Product data
 
-Frontend fallback hiện có 29 sản phẩm:
+Danh sách hiện có 16 sản phẩm thật, lấy từ `Ảnh chụp sản phẩm/`:
 
-- 14 `bracelet-*`.
-- 9 `strap-*`.
-- 6 `keychain-*`.
+- 7 `bracelet-*` (Vòng tay, 30.000đ).
+- 4 `strap-*` (Dây đeo thẻ, 49.000đ).
+- 5 `keychain-*` (Móc khóa, 35.000đ).
 
-Backend `config/products.ts` là nguồn sự thật về ID, loại, giá và tên snapshot. Frontend có thể fallback khi API chưa sẵn sàng, nhưng không được dùng giá frontend để tạo order.
+`combo-*` (4 ảnh Combo 20·10) và `model-*` (4 ảnh người mẫu) chỉ dùng cho gallery / `ModelSection`.
+
+Backend `config/products.ts` là nguồn sự thật về ID, loại, giá và tên snapshot; `GROUPS` trong `LandingPage.jsx` là bản fallback và **phải giữ đồng bộ** với backend. Không dùng giá frontend để tạo order.
 
 Ảnh sản phẩm phải dùng ảnh thật trong `frontend/public/products/`. Không thay bằng placeholder hoặc ảnh giả nếu ảnh thật tồn tại.
 
-### Catalogue page-flip
+### Brand (theo `public/Landing page.md`)
 
-Config quan trọng trong `CatalogBook`:
-
-- `showCover: true`.
-- `showPageCorners: false` để không tự gập khi hover.
-- `disableFlipByClick: false` để nút mũi tên và thao tác lật hoạt động.
-- `usePortrait: true`: container hẹp hơn `2 × minWidth` (460px) thì sách chuyển sang 1 trang. Không đặt lại `false` — khi đó page-flip ép `min-width = 2 × minWidth` = 460px, lớn hơn container điện thoại nên sách tràn và bị cắt hai bên.
-- Chiều cao `.book-upgraded` ở mobile là `auto` (do `stf__wrapper` tự tính theo tỉ lệ trang); cỡ chữ riêng cho chế độ 1 trang nằm dưới selector `.stf__wrapper.--portrait` ở cuối `styles.css`.
-- Phải gọi `destroy()` trong cleanup.
-- Không bật lại `React.StrictMode` nếu chưa xử lý lifecycle của thư viện.
-
-Nếu sửa page-flip, test cả bìa, nút trước/sau, kéo góc và viewport mobile.
-
-### Scrollytelling
-
-Section `Story` dùng:
-
-```jsx
-import { Animation as ScrollAnimation, Root as ScrollRoot } from '@bsmnt/scrollytelling';
-```
-
-Quy tắc API quan trọng:
-
-- `ScrollRoot` quản lý một timeline GSAP theo scroll.
-- Mốc `start`/`end` của `ScrollAnimation` dùng thang **0–100**, không dùng 0–1.
-- Khi cần trạng thái đầu và cuối, dùng `fromTo: [fromVars, toVars]`. Không truyền đồng thời `from` và `to`; implementation package ưu tiên nhánh `to`.
-- `ScrollAnimation` phải có một child trực tiếp để Radix Slot gắn ref.
-- Mỗi visual beat nên có khoảng timeline riêng để tránh tất cả animation chạy cùng lúc.
-- Giữ `disabled={reduce}` để tôn trọng `prefers-reduced-motion`.
-
-Phần Story hiện chia animation riêng cho card bên trái và từng hàng nội dung bên phải. Nếu animation không thấy:
-
-1. Kiểm tra DevTools Rendering không đang emulate `prefers-reduced-motion: reduce`.
-2. Kiểm tra timeline đang dùng 0–100.
-3. Kiểm tra `fromTo`, không phải `{ from, to }`.
-4. Kiểm tra section có đủ chiều cao để ScrollTrigger có khoảng scroll.
-
-### Mascot
-
-Mascot fox-riso dùng hai sprite sheet:
-
-```text
-frontend/public/mascots/fox-riso-directions.webp
-frontend/public/mascots/fox-riso-reactions.webp
-```
-
-Không đổi tên hoặc xóa một trong hai file. `Mascot` cần cả `directions` và `reactions`; trên pointer coarse package tự giảm tương tác.
+- Logo ở góc trái nav và mascot nằm trong `frontend/public/brand/` (`logo.png`, `mascot.png`), cắt từ `Ảnh chụp sản phẩm/Bộ nhận diện thương hiệu/*.pdf`. Mascot dùng ở Hero, `Story` và `CharmLab`.
+- Nội dung giới thiệu, tầm nhìn, sứ mệnh, chính sách (`Policy`) lấy nguyên văn từ tài liệu của tiệm. **Không thêm nội dung ngoài những gì tiệm cung cấp**; tên và câu mô tả sản phẩm là chữ in trên ảnh sản phẩm.
+- Màu: nền chỉ hồng `--pink` + vàng (`--yellow` nhạt, `--yellow-strong`); chữ chỉ đen `--ink` + đỏ `--red`. Khung sản phẩm giữ nguyên các màu cũ. Block "Brand pass" ở cuối `styles.css` ghi đè token trong `.site-shell` (`--blue` = đen) để admin giữ giao diện riêng.
+- Font: Muli cho tất cả (`--cherry` được trỏ về Muli trong `.site-shell`). Admin vẫn dùng Cherry Bomb One.
+- Đã bỏ: sổ catalogue `page-flip`, dây kéo đổi theme (`pullcord`) và chế độ tối, mascot cáo `page-mascot`, `@bsmnt/scrollytelling`. Các rule `.theme-dark`/`.book-*`/`.hamlay-pullcord` còn trong `styles.css` nhưng không còn được dùng.
 
 ### Accessibility và motion
 
@@ -176,7 +134,6 @@ Không đổi tên hoặc xóa một trong hai file. `Mascot` cần cả `direct
 - Input phải có label/aria-label.
 - Giữ focus state.
 - Custom cursor chỉ chạy với pointer phù hợp. Trên cảm ứng (`pointer: coarse`), chạm đúp vào chỗ trống sẽ gọi con trỏ sao chạy tới điểm đó (`CharmCursor`); nó phát sự kiện `hamlay-cursor` để `usePointerParallax` nghiêng Hero/Thử vibe theo. Chạm đúp lên phần tử tương tác (`CURSOR_BLOCKERS`) thì không kích hoạt.
-- `page-mascot` tự tắt theo dõi con trỏ khi không có `(hover: hover) and (pointer: fine)`, nên mắt con cáo không bám theo con trỏ ảo trên điện thoại.
 - Animation phải có fallback `prefers-reduced-motion`.
 - Không dùng animation làm thay đổi vùng click của nút.
 
@@ -306,7 +263,7 @@ Nguyên tắc:
 7. Nếu thêm thư viện animation, kiểm tra cleanup, reduced-motion, bundle size và mobile fallback.
 8. Không báo production-ready nếu chưa test MongoDB/Brevo thật.
 9. Không commit `.env`, token, password hoặc API key.
-10. Khi thay đổi landing page, test tối thiểu desktop, mobile, reduced-motion, cart, product detail và catalogue.
+10. Khi thay đổi landing page, test tối thiểu desktop, mobile, reduced-motion, cart, product detail và checkout.
 
 ## 9. Tình trạng kiểm thử hiện tại
 
@@ -315,7 +272,7 @@ Nguyên tắc:
 - Frontend Vite build: pass.
 - Backend TypeScript build: pass ở các lần kiểm tra trước.
 - `git diff --check`: pass sau các thay đổi gần nhất.
-- Product assets, QR, music và mascot assets đã có trong repository.
+- Product assets, QR, music, logo và mascot đã có trong repository (`frontend/public/products`, `frontend/public/brand`).
 
 Chưa thể xác nhận end-to-end với dịch vụ thật nếu thiếu:
 
@@ -323,4 +280,4 @@ Chưa thể xác nhận end-to-end với dịch vụ thật nếu thiếu:
 - Brevo API key và sender đã verify.
 - Admin environment variables production.
 
-Build frontend hiện có cảnh báo bundle JavaScript lớn do GSAP/scrollytelling; đây là warning hiệu năng, không phải lỗi build. Nếu tối ưu tiếp, ưu tiên code-split thư viện animation sau khi giữ nguyên behavior.
+Build frontend hiện chỉ còn cảnh báo bundle JavaScript lớn (React + Motion + GSAP-free); đây là warning hiệu năng, không phải lỗi build.
