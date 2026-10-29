@@ -766,5 +766,8 @@ html[data-theme="dark"] body:not(:has(.admin-shell)){background:linear-gradient(
 .site-shell>.site-nav:after{display:none}
 .site-shell>.site-nav .nav-inner{flex:0 0 auto;width:auto;max-width:none;margin:0;padding-inline:20px;gap:22px}
 @media (max-width:900px){.site-shell>.site-nav .nav-inner{padding-inline:12px;gap:10px}}
-.site-shell>.site-nav{padding-right:100px}
-@media (max-width:900px){.site-shell>.site-nav{padding-right:56px}}
+.site-shell.has-cord>.site-nav{padding-right:100px}
+@media (max-width:900px){.site-shell.has-cord>.site-nav{padding-right:56px}}
+/* Round 8: hero title breaks as Vòng đẹp / bạn đeo, / Vòng lỗi / shop đổi. */
+.hero-copy h1 .h1-line{display:block;white-space:nowrap}
+.hero-copy h1 em{display:block}
