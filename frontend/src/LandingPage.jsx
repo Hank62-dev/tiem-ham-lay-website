@@ -35,7 +35,7 @@ const GROUPS = [
     ['Bông Vàng Khè', 'Móc khóa handmade.'],
     ['Bông Hồng Lầy', 'Móc khóa handmade.'],
     ['Bông Dưới Biển', 'Móc khóa handmade.'],
-    ['Bông Ngành', 'Móc khóa handmade.'],
+    ['Bông Ngành Y', 'Móc khóa handmade.'],
   ] },
 ];
 const FALLBACK_PRODUCTS = GROUPS.flatMap((group) => group.items.map(([name, description], index) => ({
@@ -234,7 +234,7 @@ function usePointerParallax() {
 function Navigation({ count, onCart }) {
   const [open, setOpen] = useState(false);
   const links = [['Về tiệm', '#story'], ['Sản phẩm', '#products'], ['Tặng quà', '#gift'], ['Chính sách', '#policy'], ['Liên hệ', '#contact']];
-  return <header className="site-nav"><div className="container nav-inner"><a className="wordmark wordmark-logo" href="#top" onClick={() => setOpen(false)} aria-label="Tiệm ham lầy"><img src="/brand/logo.png" alt="Tiệm ham lầy" /></a><nav className={`nav-links ${open ? 'is-open' : ''}`}>{links.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}<a className="nav-instagram" href={INSTAGRAM_URL} target="_blank" rel="noreferrer"><Instagram size={15} /> Instagram</a></nav><button className="nav-cart" onClick={onCart} aria-label={`Mở giỏ hàng, ${count} sản phẩm`}><ShoppingBag size={18} /><span>{count}</span></button><button className="nav-menu" onClick={() => setOpen((value) => !value)} aria-label="Mở menu">{open ? <X size={21} /> : <Menu size={21} />}</button></div></header>;
+  return <header className="site-nav"><a className="wordmark wordmark-logo nav-logo-out" href="#top" onClick={() => setOpen(false)} aria-label="Tiệm ham lầy"><img src="/brand/logo.png" alt="Tiệm ham lầy" /></a><div className="container nav-inner"><nav className={`nav-links ${open ? 'is-open' : ''}`}>{links.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}<a className="nav-instagram" href={INSTAGRAM_URL} target="_blank" rel="noreferrer"><Instagram size={15} /> Instagram</a></nav><button className="nav-cart" onClick={onCart} aria-label={`Mở giỏ hàng, ${count} sản phẩm`}><ShoppingBag size={18} /><span>{count}</span></button><button className="nav-menu" onClick={() => setOpen((value) => !value)} aria-label="Mở menu">{open ? <X size={21} /> : <Menu size={21} />}</button></div></header>;
 }
 
 function Hero({ onExplore, total }) {
@@ -265,12 +265,22 @@ function GalleryContact() {
   return <section className="section gallery-contact" id="gallery"><div className="container"><div className="section-heading"><div><p className="eyebrow">COMBO 20·10</p><h2>Combo<br /><em>yêu thương.</em></h2></div><p>Các combo vòng tay, dây đeo thẻ và móc khóa của tiệm.</p></div><div className="gallery-grid">{[1, 2, 3, 4].map((index) => <div className={`gallery-tile gallery-tile-${index}`} key={index}><img src={`/products/combo-${index}.png`} alt={`Combo yêu thương ${index}`} loading="lazy" /><span>combo 20·10 ✦</span></div>)}</div></div></section>;
 }
 
-// Where the bracelet sits in each model photo (fraction of width / height), so the round lens can zoom onto the wrist.
-const MODEL_WRISTS = [{ x: .3, y: .51 }, { x: .53, y: .66 }, { x: .495, y: .59 }, { x: .425, y: .67 }];
+// Where the worn item sits in each model photo (fraction of width / height), so the round lens can zoom onto it.
+const MODELS = [
+  { group: 'Vòng tay', src: '/products/model-1.png', x: .3, y: .51, ratio: 1.25, label: 'vòng tay · thử đeo' },
+  { group: 'Vòng tay', src: '/products/model-2.png', x: .53, y: .66, ratio: 1.25, label: 'vòng tay · thử đeo' },
+  { group: 'Vòng tay', src: '/products/model-3.png', x: .495, y: .59, ratio: 1.25, label: 'vòng tay · thử đeo' },
+  { group: 'Vòng tay', src: '/products/model-4.png', x: .425, y: .67, ratio: 1.25, label: 'vòng tay · thử đeo' },
+  { group: 'Dây đeo thẻ', src: '/products/model-strap-1.jpg', x: .46, y: .72, ratio: 4 / 3, zoom: 3, label: 'dây đeo thẻ · thử đeo' },
+  { group: 'Dây đeo thẻ', src: '/products/model-strap-2.jpg', x: .52, y: .7, ratio: 4 / 3, zoom: 3, label: 'dây đeo thẻ · thử đeo' },
+  { group: 'Dây đeo thẻ', src: '/products/model-strap-3.jpg', x: .58, y: .7, ratio: 4 / 3, zoom: 3, label: 'dây đeo thẻ · thử đeo' },
+  { group: 'Dây đeo thẻ', src: '/products/model-strap-4.jpg', x: .455, y: .68, ratio: 4 / 3, zoom: 3, label: 'dây đeo thẻ · thử đeo' },
+];
 function ModelSection() {
-  const reduce = useReducedMotion(); const zoom = 4; const ratio = 1.25;
-  const lens = ({ x, y }) => ({ backgroundSize: `${zoom * 100}% auto`, backgroundPosition: `${((x * zoom - .5) / (zoom - 1) * 100).toFixed(1)}% ${((y * zoom * ratio - .5) / (zoom * ratio - 1) * 100).toFixed(1)}%` });
-  return <section className="section model-section" id="model"><div className="container"><div className="section-heading"><div><p className="eyebrow">NGƯỜI MẪU CHỤP</p><h2>Thử đeo<br /><em>lên tay.</em></h2></div><p>Ảnh người mẫu chụp thật của tiệm. Vòng tròn nhỏ phóng to đúng cổ tay đang đeo vòng.</p></div><div className="model-grid">{MODEL_WRISTS.map((wrist, index) => <motion.figure className="model-card" key={index} initial={reduce ? false : { opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ delay: index * .08, type: 'spring', stiffness: 90, damping: 16 }}><div className="model-photo"><img src={`/products/model-${index + 1}.png`} alt={`Người mẫu đeo vòng tay Tiệm ham lầy ${index + 1}`} loading="lazy" /></div><div className="model-lens" style={{ backgroundImage: `url(/products/model-${index + 1}.png)`, ...lens(wrist) }} role="img" aria-label="Cận cảnh vòng tay trên cổ tay người mẫu" /><figcaption>vòng tay · thử đeo</figcaption></motion.figure>)}</div></div></section>;
+  const reduce = useReducedMotion();
+  const lens = ({ x, y, ratio, zoom = 4 }) => ({ backgroundSize: `${zoom * 100}% auto`, backgroundPosition: `${((x * zoom - .5) / (zoom - 1) * 100).toFixed(1)}% ${((y * zoom * ratio - .5) / (zoom * ratio - 1) * 100).toFixed(1)}%` });
+  const groups = ['Vòng tay', 'Dây đeo thẻ'];
+  return <section className="section model-section" id="model"><div className="container"><div className="section-heading"><div><p className="eyebrow">NGƯỜI MẪU CHỤP</p><h2>Thử đeo<br /><em>lên người.</em></h2></div><p>Ảnh người mẫu chụp thật của tiệm. Vòng tròn nhỏ phóng to đúng món đang đeo.</p></div>{groups.map((group) => <div className="model-group" key={group}><h3 className="model-group-title"><span>✦</span> {group}</h3><div className="model-grid">{MODELS.filter((item) => item.group === group).map((item, index) => <motion.figure className="model-card" key={item.src} initial={reduce ? false : { opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ delay: index * .08, type: 'spring', stiffness: 90, damping: 16 }}><div className="model-photo"><img src={item.src} alt={`Người mẫu đeo ${group.toLowerCase()} Tiệm ham lầy ${index + 1}`} loading="lazy" /></div><div className="model-lens" style={{ backgroundImage: `url(${item.src})`, ...lens(item) }} role="img" aria-label={`Cận cảnh ${group.toLowerCase()} trên người mẫu`} /><figcaption>{item.label}</figcaption></motion.figure>)}</div></div>)}</div></section>;
 }
 
 function Policy() {

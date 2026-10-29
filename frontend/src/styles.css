@@ -745,3 +745,26 @@ body:not(:has(.admin-shell)){background:#fbf8ce}
 html[data-theme="dark"] body:not(:has(.admin-shell)){background:linear-gradient(180deg,#1d1118 0%,#2a1623 35%,#1d1118 65%,#2a1623 100%)}
 .site-shell.theme-dark .hero-upgraded{background:radial-gradient(circle at 80% 30%,rgba(255,236,1,.17),transparent 32%),radial-gradient(circle at 8% 85%,rgba(244,195,209,.18),transparent 34%)}
 .site-shell.theme-dark .about-section,.site-shell.theme-dark .products-section-upgraded,.site-shell.theme-dark .products-section,.site-shell.theme-dark .charm-lab,.site-shell.theme-dark .gift-section-upgraded,.site-shell.theme-dark .how-section-upgraded,.site-shell.theme-dark .gallery-contact,.site-shell.theme-dark .model-section,.site-shell.theme-dark .policy-section,.site-shell.theme-dark .contact-section,.site-shell.theme-dark .payment-band,.site-shell.theme-dark .site-footer{background:transparent;border-color:rgba(244,195,209,.28)}
+/* Round 6: logo sits outside the nav pill; model section has two groups */
+.site-shell>.site-nav{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;height:56px;padding-inline:20px}
+.site-shell>.site-nav .nav-logo-out{flex:none;display:block}.site-shell>.site-nav .nav-logo-out img{height:72px;width:auto;margin:-8px 0 -8px;filter:drop-shadow(0 3px 0 rgba(0,0,0,.14))}
+.site-shell>.site-nav .nav-inner{flex:1;width:auto;min-width:0;max-width:980px;margin:0}
+.site-shell>.site-nav:after{content:"";flex:none;width:98px}
+@media (max-width:900px){.site-shell>.site-nav{padding-inline:10px;gap:8px}.site-shell>.site-nav:after{display:none}.site-shell>.site-nav .nav-logo-out img{height:60px}.site-shell>.site-nav .nav-inner{width:auto;max-width:none}}
+@media (max-width:600px){.site-shell>.site-nav .nav-logo-out img{height:52px}.site-shell>.site-nav{height:52px}}
+.theme-dark.site-shell>.site-nav .nav-logo-out img{filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}
+.model-group+.model-group{margin-top:34px}
+.model-group-title{display:flex;align-items:center;gap:10px;margin:0 0 26px;font-size:1.5rem}.model-group-title span{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--yellow-strong);font-size:1rem}
+.model-grid{padding-bottom:20px}
+.theme-dark .model-group-title{color:#fffdf4}
+.site-shell>.site-nav{margin-bottom:-66px}
+.site-shell .hero{padding-top:66px}
+@media (max-width:900px){.site-shell>.site-nav .nav-cart{margin-left:auto}.site-shell>.site-nav .nav-menu{margin-left:0}}
+@media (max-width:600px){.site-shell>.site-nav{margin-bottom:-62px}.site-shell .hero{padding-top:62px}}
+/* Round 7: shrink the nav pill to its content — logo left, compact pill right */
+.site-shell>.site-nav{justify-content:space-between}
+.site-shell>.site-nav:after{display:none}
+.site-shell>.site-nav .nav-inner{flex:0 0 auto;width:auto;max-width:none;margin:0;padding-inline:20px;gap:22px}
+@media (max-width:900px){.site-shell>.site-nav .nav-inner{padding-inline:12px;gap:10px}}
+.site-shell>.site-nav{padding-right:100px}
+@media (max-width:900px){.site-shell>.site-nav{padding-right:56px}}

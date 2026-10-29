@@ -22,7 +22,7 @@ const groups = [
     ['Bông Vàng Khè', 'Móc khóa handmade.'],
     ['Bông Hồng Lầy', 'Móc khóa handmade.'],
     ['Bông Dưới Biển', 'Móc khóa handmade.'],
-    ['Bông Ngành', 'Móc khóa handmade.'],
+    ['Bông Ngành Y', 'Móc khóa handmade.'],
   ] },
 ];
 

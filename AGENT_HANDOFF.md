@@ -88,7 +88,7 @@ pnpm.cmd --dir backend build
 - `CharmLab` ("Thử vibe") với ảnh sản phẩm xoay quanh mascot.
 - `GiftExperience` với textarea lời chúc có thể chỉnh sửa.
 - `HowToOrder`.
-- `GalleryContact` (combo 20·10) và `ModelSection` (ảnh người mẫu; vòng tròn phóng to cổ tay theo toạ độ trong `MODEL_WRISTS`, thêm ảnh mới thì thêm toạ độ).
+- `GalleryContact` (combo 20·10) và `ModelSection` (ảnh người mẫu; vòng tròn phóng to món đang đeo theo toạ độ trong mảng `MODELS`, chia nhóm Vòng tay / Dây đeo thẻ; thêm ảnh mới thì thêm một dòng với x, y, ratio, zoom).
 - `Policy` (giao hàng, thanh toán/cọc, bảo hành) và `Contact` (Instagram + các kênh khác).
 - Cart drawer, checkout form, success modal và ambient music.
 
