@@ -693,3 +693,55 @@ body:not(:has(.admin-shell)){background:#fbf8ce}
 .pillar-number{display:none}
 .pillar-foot{display:flex;align-items:center;min-height:78px}
 .about-time>.about-time-item{display:flex;gap:16px}
+/* Round 3: nav Instagram pill, sparkle mascot, cuter selected filter */
+.site-shell>.site-nav .nav-instagram{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:2px solid var(--ink);border-radius:999px;background:var(--red);color:#fff!important;font-size:.8rem;font-weight:800;line-height:1;box-shadow:2px 3px 0 var(--ink);transition:transform .2s,box-shadow .2s}
+.site-shell>.site-nav .nav-instagram:hover{transform:translateY(-2px) rotate(-2deg);box-shadow:3px 5px 0 var(--ink);color:#fff!important}
+@media (max-width:900px){.site-shell>.site-nav .nav-links .nav-instagram{justify-content:center;margin:10px 4px 4px;padding:13px 16px;border-bottom:2px solid var(--ink);font-size:.9rem}}
+.about-mascot:before{display:none}
+.about-mascot img{width:min(420px,96%)}
+.about-mascot:after{content:"";position:absolute;width:min(360px,86%);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(244,195,209,.75),rgba(255,236,1,.28) 55%,transparent 72%);filter:blur(10px);z-index:0}
+.about-mascot img{z-index:1}
+.about-spark{position:absolute;z-index:2;color:var(--red);font-style:normal;line-height:1;text-shadow:2px 2px 0 var(--paper);animation:aboutTwinkle 2.8s ease-in-out infinite}
+.about-spark:nth-of-type(1){left:6%;top:12%;font-size:2.6rem}.about-spark:nth-of-type(2){right:4%;top:6%;font-size:1.7rem;color:var(--ink);animation-delay:-.7s}.about-spark:nth-of-type(3){right:10%;bottom:16%;font-size:2.3rem;animation-delay:-1.4s}.about-spark:nth-of-type(4){left:2%;bottom:24%;font-size:1.4rem;color:#e0b700;animation-delay:-2.1s}.about-spark:nth-of-type(5){left:46%;top:-2%;font-size:1.3rem;color:var(--pink);text-shadow:1px 1px 0 var(--ink);animation-delay:-.3s}.about-spark:nth-of-type(6){right:30%;bottom:2%;font-size:1.5rem;color:var(--ink);animation-delay:-1.8s}
+@keyframes aboutTwinkle{0%,100%{transform:scale(.7) rotate(0);opacity:.55}50%{transform:scale(1.2) rotate(18deg);opacity:1}}
+@media (prefers-reduced-motion:reduce){.about-spark{animation:none!important}}
+.filter-row button.is-active,.filter-row button:hover{background:var(--yellow-strong);color:var(--red);border:2px solid var(--ink);box-shadow:3px 4px 0 var(--red);transform:translateY(-2px) rotate(-1.5deg)}
+.filter-row button.is-active:before{content:"✦ ";color:var(--red)}
+.filter-row button{border:2px solid rgba(0,0,0,.18);background:rgba(255,255,255,.55);transition:transform .2s,box-shadow .2s,background .2s}
+.product-pagination button.is-active,.product-pagination button:hover:not(:disabled){background:var(--yellow-strong);color:var(--red);border-color:var(--ink);box-shadow:2px 3px 0 var(--red)}
+/* Round 4: dark theme (pull cord) re-skinned for the pink/yellow brand — night plum backgrounds, cream text, light cards stay light */
+.site-shell.theme-dark{--cream:#1d1118;--muted:#e9d6dc}
+.theme-dark.site-shell>.site-nav .nav-inner{background:linear-gradient(100deg,#2c1822,#3a1f2d);border-color:var(--pink);box-shadow:3px 4px 0 var(--pink)}
+.theme-dark.site-shell>.site-nav .nav-links a,.theme-dark.site-shell>.site-nav .nav-menu{color:#fffdf4!important}
+.theme-dark.site-shell>.site-nav .nav-instagram{color:#fff!important}
+.theme-dark.site-shell>.site-nav .nav-cart{color:#000}
+.theme-dark .hero-upgraded{background:radial-gradient(circle at 80% 30%,rgba(255,236,1,.17),transparent 32%),radial-gradient(circle at 8% 85%,rgba(244,195,209,.18),transparent 34%),#1d1118}
+.theme-dark .about-section,.theme-dark .gallery-contact,.theme-dark .policy-section{background:#26151e}
+.theme-dark .products-section-upgraded,.theme-dark .products-section,.theme-dark .model-section,.theme-dark .contact-section,.theme-dark .how-section-upgraded,.theme-dark .gift-section-upgraded{background:#1d1118}
+.theme-dark .charm-lab{background:#2a1623;color:#fffdf4}
+.theme-dark .charm-lab:before{background:radial-gradient(circle at 75% 50%,rgba(244,195,209,.26),transparent 36%),radial-gradient(circle at 20% 15%,rgba(255,236,1,.12),transparent 28%)}
+.theme-dark .payment-band{background:#3a1d2c;border-color:var(--pink);color:#fffdf4}.theme-dark .payment-band a,.theme-dark .payment-band span,.theme-dark .payment-band strong{color:#fffdf4}
+.theme-dark .site-footer{background:#150c11;border-color:var(--pink)}
+.theme-dark main :is(h1,h2){color:#fffdf4;-webkit-text-fill-color:#fffdf4}
+.theme-dark main :is(h1,h2) em{color:var(--pink);-webkit-text-fill-color:var(--pink)}
+.theme-dark main>section .eyebrow{color:var(--pink)}
+.theme-dark .hero-lede,.theme-dark .about-copy p:not(.eyebrow),.theme-dark .about-whisper p,.theme-dark .about-whisper h3,.theme-dark .section-heading>p,.theme-dark .gift-copy>p,.theme-dark .charm-lab p:not(.eyebrow),.theme-dark .contact-head p:not(.eyebrow),.theme-dark .hero-scroll,.theme-dark .text-link{color:#fffdf4}
+.theme-dark .about-whisper em{color:var(--pink)}
+.theme-dark .hero-note{background:rgba(255,255,255,.1);color:#fffdf4}
+.theme-dark .charm-lab-tip,.theme-dark .charm-lab-tip *{color:#fffdf4;border-color:rgba(255,253,244,.5)}
+.theme-dark .charm-orbit{border-color:rgba(255,253,244,.3)}
+.theme-dark .filter-row button{background:rgba(255,255,255,.08);color:#fffdf4;border-color:rgba(255,253,244,.3)}
+.theme-dark .filter-row button.is-active,.theme-dark .filter-row button:hover{background:var(--yellow-strong);color:var(--red);border-color:#000}
+.theme-dark .product-pagination span{color:#fffdf4}
+.theme-dark .pillar,.theme-dark .policy-box,.theme-dark .about-time,.theme-dark .model-photo,.theme-dark .gallery-tile{box-shadow:8px 10px 0 rgba(244,195,209,.45)}
+.theme-dark .model-card figcaption{color:var(--pink)}
+.theme-dark .model-lens{box-shadow:0 0 0 2px #000,5px 7px 0 rgba(0,0,0,.6)}
+.theme-dark .site-footer .footer-grid>div>a:not(.wordmark),.theme-dark .site-footer .footer-grid>div>span,.theme-dark .site-footer .footer-grid>div>p,.theme-dark .site-footer .footer-bottom span{color:#fffdf4}
+.theme-dark .site-footer .footer-grid small{color:var(--pink)}.theme-dark .site-footer .footer-grid>div>a:not(.wordmark):hover{color:var(--yellow-strong)}
+.theme-dark .footer-bottom{border-color:rgba(244,195,209,.4)!important}
+.theme-dark .about-mascot:after{background:radial-gradient(circle,rgba(244,195,209,.38),rgba(255,236,1,.12) 55%,transparent 72%)}
+.theme-dark .about-spark{text-shadow:none}
+/* Round 5: dark theme only — sections are transparent so the night-plum page background and falling stars show through */
+html[data-theme="dark"] body:not(:has(.admin-shell)){background:linear-gradient(180deg,#1d1118 0%,#2a1623 35%,#1d1118 65%,#2a1623 100%)}
+.site-shell.theme-dark .hero-upgraded{background:radial-gradient(circle at 80% 30%,rgba(255,236,1,.17),transparent 32%),radial-gradient(circle at 8% 85%,rgba(244,195,209,.18),transparent 34%)}
+.site-shell.theme-dark .about-section,.site-shell.theme-dark .products-section-upgraded,.site-shell.theme-dark .products-section,.site-shell.theme-dark .charm-lab,.site-shell.theme-dark .gift-section-upgraded,.site-shell.theme-dark .how-section-upgraded,.site-shell.theme-dark .gallery-contact,.site-shell.theme-dark .model-section,.site-shell.theme-dark .policy-section,.site-shell.theme-dark .contact-section,.site-shell.theme-dark .payment-band,.site-shell.theme-dark .site-footer{background:transparent;border-color:rgba(244,195,209,.28)}

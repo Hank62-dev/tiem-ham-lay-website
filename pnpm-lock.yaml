@@ -75,6 +75,9 @@ importers:
       motion:
         specifier: ^12.23.24
         version: 12.43.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      pullcord:
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react:
         specifier: ^19.1.1
         version: 19.3.1
@@ -1227,6 +1230,12 @@ packages:
   proxy-addr@2.0.8:
     resolution: {integrity: sha512-5nnx0yGyVUcY6t9RnWcARWtwT9F1D8O9rt08htPvnd49W1IgZtmLkhu9WfMzQj1cFxjHIO6connUNVW5k7AVyQ==}
     engines: {node: '>= 0.10'}
+
+  pullcord@0.1.0:
+    resolution: {integrity: sha512-v+3L1gP0+4jZWZV5y0lrTown+1xRGVIupd0wjNTbD8bQtatY6RQesA7/wT9Ge8eF/mLLVpK3Bw5Xjl1hRQWRxA==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
 
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -2463,6 +2472,14 @@ snapshots:
     dependencies:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
+
+  pullcord@0.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+    dependencies:
+      motion: 12.43.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
 
   punycode@2.3.1: {}
 

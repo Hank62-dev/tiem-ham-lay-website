@@ -53,7 +53,7 @@ Mục tiêu chính là kết hợp landing page giàu animation với luồng mu
 - Frontend: React 19 + Vite.
 - Styling: CSS hiện tại trong `frontend/src/styles.css`; Tailwind được cài nhưng phần landing chính đang dùng CSS design system hiện hữu.
 - Animation UI: `motion`.
-- Animation UI: `motion` (`gsap`, `@bsmnt/scrollytelling`, `page-flip`, `page-mascot`, `pullcord` đã gỡ khỏi dependency).
+- Animation UI: `motion` (`gsap`, `@bsmnt/scrollytelling`, `page-flip`, `page-mascot` đã gỡ khỏi dependency; `pullcord` đã được thêm lại).
 - Backend: Node.js + Express + TypeScript.
 - Database: MongoDB + Mongoose.
 - Email: Brevo từ backend.
@@ -126,7 +126,7 @@ Backend `config/products.ts` là nguồn sự thật về ID, loại, giá và t
 - Nội dung giới thiệu, tầm nhìn, sứ mệnh, chính sách (`Policy`) lấy nguyên văn từ tài liệu của tiệm. **Không thêm nội dung ngoài những gì tiệm cung cấp**; tên và câu mô tả sản phẩm là chữ in trên ảnh sản phẩm.
 - Màu: nền chỉ hồng `--pink` + vàng (`--yellow` nhạt, `--yellow-strong`); chữ chỉ đen `--ink` + đỏ `--red`. Khung sản phẩm giữ nguyên các màu cũ. Block "Brand pass" ở cuối `styles.css` ghi đè token trong `.site-shell` (`--blue` = đen) để admin giữ giao diện riêng.
 - Font: Muli cho tất cả (`--cherry` được trỏ về Muli trong `.site-shell`). Admin vẫn dùng Cherry Bomb One.
-- Đã bỏ: sổ catalogue `page-flip`, dây kéo đổi theme (`pullcord`) và chế độ tối, mascot cáo `page-mascot`, `@bsmnt/scrollytelling`. Các rule `.theme-dark`/`.book-*`/`.hamlay-pullcord` còn trong `styles.css` nhưng không còn được dùng.
+- Dây kéo đổi theme (`pullcord`) + chế độ tối đã được bật lại; skin tối cho thương hiệu nằm ở block "Round 4" cuối `styles.css` (nền mận đêm, chữ kem, thẻ giữ màu sáng). Đã bỏ: sổ catalogue `page-flip`, mascot cáo `page-mascot`, `@bsmnt/scrollytelling`. Các rule `.theme-dark`/`.book-*`/`.hamlay-pullcord` còn trong `styles.css` nhưng không còn được dùng.
 
 ### Accessibility và motion
 
