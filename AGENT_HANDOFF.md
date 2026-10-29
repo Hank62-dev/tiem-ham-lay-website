@@ -159,6 +159,8 @@ Không tin giá, tổng tiền hoặc trạng thái thanh toán từ frontend.
 ### Admin API
 
 - `POST /api/admin/login`.
+- `POST /api/admin/refresh` — đổi refresh token lấy cặp token mới (xoay vòng, mỗi token chỉ dùng một lần).
+- `POST /api/admin/logout` — thu hồi cả chuỗi refresh token.
 - `GET /api/admin/dashboard`.
 - `GET /api/admin/orders?page=&limit=&search=&status=&paymentStatus=`.
 - `GET /api/admin/orders/:id`.
@@ -166,7 +168,7 @@ Không tin giá, tổng tiền hoặc trạng thái thanh toán từ frontend.
 - `PATCH /api/admin/orders/:id/payment`.
 - `GET /api/admin/customers?page=&limit=&search=`.
 
-Admin dùng JWT. Không hard-code mật khẩu, secret hoặc token. Trạng thái xử lý và trạng thái thanh toán là hai field độc lập.
+Admin dùng JWT. Không hard-code mật khẩu, secret hoặc token. Access token sống 15 phút; refresh token (7 ngày, tối đa 30 ngày từ lúc đăng nhập) lưu băm SHA-256 trong collection `refreshtokens` (TTL index tự dọn). Dùng lại refresh token cũ ngoài khoảng 15 giây thì cả chuỗi bị thu hồi (phát hiện bị đánh cắp); trong 15 giây là nhiều tab cùng làm mới nên chỉ từ chối. Không có MongoDB thì login vẫn chạy nhưng không có refresh token. Frontend (`api.js`) tự làm mới trước khi hết hạn / khi gặp 401 và bắn sự kiện `hamlay-admin-logout` khi phiên chết. Trạng thái xử lý và trạng thái thanh toán là hai field độc lập.
 
 ### Schema order
 

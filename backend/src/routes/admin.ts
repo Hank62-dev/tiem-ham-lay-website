@@ -1,10 +1,12 @@
-import { Router } from 'express';
+import { Router, type Response } from 'express';
 import crypto from 'node:crypto';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
+import mongoose from 'mongoose';
 import { Order } from '../models/order.model.js';
+import { RefreshToken } from '../models/refresh-token.model.js';
 import { env } from '../config/env.js';
-import { hashPassword, safeEqual, signAdmin } from '../utils/security.js';
+import { ACCESS_TOKEN_SECONDS, REFRESH_FAMILY_MAX_DAYS, REFRESH_TOKEN_DAYS, hashPassword, hashToken, newRefreshToken, safeEqual, signAdmin } from '../utils/security.js';
 import { requireAdmin } from '../middleware/auth.js';
 
 export const adminRouter = Router();
@@ -14,7 +16,48 @@ adminRouter.post('/login', rateLimit({ windowMs: 15 * 60_000, limit: 10 }), (req
   const validEmail = String(email || '').toLowerCase() === env.ADMIN_EMAIL.toLowerCase();
   const validPassword = typeof password === 'string' && safeEqual(hashPassword(password, env.ADMIN_PASSWORD_SALT), env.ADMIN_PASSWORD_HASH);
   if (!validEmail || !validPassword) return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng.' });
-  return res.json({ data: { token: signAdmin(env.ADMIN_EMAIL), email: env.ADMIN_EMAIL } });
+  return issueSession(res, env.ADMIN_EMAIL);
+});
+
+const DAY = 86_400_000;
+const REUSE_GRACE_MS = 15_000;
+const dbReady = () => mongoose.connection.readyState === 1;
+
+// Without MongoDB there is nowhere to keep refresh tokens, so the session simply has no refresh token.
+async function issueSession(res: Response, email: string, family: string = crypto.randomUUID(), familyStartedAt: Date = new Date()) {
+  const data: Record<string, unknown> = { token: signAdmin(email), email, expiresIn: ACCESS_TOKEN_SECONDS };
+  if (dbReady()) {
+    const refreshToken = newRefreshToken();
+    const expiresAt = new Date(Math.min(Date.now() + REFRESH_TOKEN_DAYS * DAY, familyStartedAt.getTime() + REFRESH_FAMILY_MAX_DAYS * DAY));
+    await RefreshToken.create({ tokenHash: hashToken(refreshToken), family, email, familyStartedAt, expiresAt });
+    data.refreshToken = refreshToken;
+  }
+  return res.json({ data });
+}
+
+// Rotating refresh: each token works once. Presenting an already-used token again (outside a short grace for parallel tabs) revokes the whole family.
+adminRouter.post('/refresh', rateLimit({ windowMs: 60_000, limit: 30 }), async (req, res) => {
+  const presented = req.body?.refreshToken;
+  if (typeof presented !== 'string' || presented.length < 20 || presented.length > 200) return res.status(401).json({ message: 'Phiên đăng nhập không hợp lệ.', code: 'REFRESH_INVALID' });
+  if (!dbReady()) return res.status(503).json({ message: 'Máy chủ chưa sẵn sàng, thử lại sau nhé.' });
+  const record = await RefreshToken.findOne({ tokenHash: hashToken(presented) });
+  if (!record || record.expiresAt.getTime() <= Date.now()) return res.status(401).json({ message: 'Phiên đăng nhập đã hết hạn.', code: 'REFRESH_EXPIRED' });
+  if (record.usedAt) {
+    if (Date.now() - record.usedAt.getTime() > REUSE_GRACE_MS) await RefreshToken.deleteMany({ family: record.family });
+    return res.status(401).json({ message: 'Phiên đăng nhập đã được làm mới ở nơi khác.', code: 'REFRESH_REUSED' });
+  }
+  const claimed = await RefreshToken.updateOne({ _id: record._id, usedAt: { $exists: false } }, { usedAt: new Date() });
+  if (!claimed.modifiedCount) return res.status(401).json({ message: 'Phiên đăng nhập đã được làm mới ở nơi khác.', code: 'REFRESH_REUSED' });
+  return issueSession(res, record.email, record.family, record.familyStartedAt);
+});
+
+adminRouter.post('/logout', async (req, res) => {
+  const presented = req.body?.refreshToken;
+  if (typeof presented === 'string' && presented.length <= 200 && dbReady()) {
+    const record = await RefreshToken.findOne({ tokenHash: hashToken(presented) });
+    if (record) await RefreshToken.deleteMany({ family: record.family });
+  }
+  return res.json({ data: { ok: true } });
 });
 
 adminRouter.use(requireAdmin);

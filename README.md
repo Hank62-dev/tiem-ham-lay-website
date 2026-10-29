@@ -58,7 +58,7 @@ Copy hai dòng output vào `ADMIN_PASSWORD_SALT` và `ADMIN_PASSWORD_HASH`.
 - Gift flow có tên người nhận, lời chúc và preview thiệp; khi tắt gift, dữ liệu gift không gửi lên backend.
 - Thanh toán chuyển khoản với QR thật, MB, `NGUYEN LE THU HA`, `0399799892`; không tự đánh dấu paid.
 - Instagram fallback: copy tin nhắn và mở `@tiemhamlay.handmade`; website không tuyên bố đã gửi tin.
-- Admin `/admin`: JWT login, dashboard số liệu thật, search/filter/pagination order, chi tiết dữ liệu trong bảng, cập nhật order status hợp lệ, toggle payment paid/unpaid, customer aggregation theo số điện thoại.
+- Admin `/admin`: JWT login + refresh token xoay vòng, dashboard số liệu thật, search/filter/pagination order, chi tiết dữ liệu trong bảng, cập nhật order status hợp lệ, toggle payment paid/unpaid, customer aggregation theo số điện thoại.
 - Brevo transactional email ở backend.
 - Responsive, semantic labels, focus state, reduced-motion fallback, custom cursor chỉ dùng với pointer phù hợp.
 
