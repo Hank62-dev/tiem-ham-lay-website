@@ -94,6 +94,24 @@ adminRouter.patch('/orders/:id/payment', async (req, res) => {
   const order = await Order.findByIdAndUpdate(req.params.id, { paymentStatus: parsed.data.paymentStatus }, { new: true }).lean(); if (!order) return res.status(404).json({ message: 'Không tìm thấy đơn hàng.' }); return res.json({ data: order });
 });
 
+// Audience breakdown over every distinct customer (one per phone number), independent of the table's search/paging.
+const AGE_BANDS = [{ label: 'Dưới 18', max: 17 }, { label: '18–24', max: 24 }, { label: '25–34', max: 34 }, { label: '35–44', max: 44 }, { label: '45+', max: Infinity }];
+adminRouter.get('/customers/stats', async (_req, res) => {
+  const people = await Order.aggregate([{ $sort: { createdAt: -1 } }, { $group: { _id: '$customer.phone', birthYear: { $first: '$customer.birthYear' }, gender: { $first: '$customer.gender' } } }]);
+  const year = new Date().getFullYear();
+  const bucket = (gender?: string) => (gender === 'female' || gender === 'male' ? gender : 'other');
+  const gender = { female: 0, male: 0, other: 0 };
+  const ages = AGE_BANDS.map((band) => ({ label: band.label, female: 0, male: 0, other: 0, total: 0 }));
+  let ageSum = 0; let aged = 0;
+  for (const person of people) {
+    const group = bucket(person.gender); gender[group] += 1;
+    if (!person.birthYear) continue;
+    const age = year - person.birthYear; ageSum += age; aged += 1;
+    const row = ages[AGE_BANDS.findIndex((band) => age <= band.max)]; row[group] += 1; row.total += 1;
+  }
+  return res.json({ data: { total: people.length, gender, ages, averageAge: aged ? Math.round((ageSum / aged) * 10) / 10 : null } });
+});
+
 adminRouter.get('/customers', async (req, res) => {
   const page = Math.max(1, Number(req.query.page) || 1); const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 10)); const search = String(req.query.search || '').trim();
   const match: any = {}; if (search) { const safe = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); match.$or = [{ 'customer.fullName': new RegExp(safe, 'i') }, { 'customer.phone': new RegExp(safe, 'i') }, { 'customer.email': new RegExp(safe, 'i') }]; }
