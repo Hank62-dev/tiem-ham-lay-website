@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import LandingPage from './LandingPage.jsx';
-import { ArrowDown, ArrowRight, Check, ChevronLeft, ChevronRight, ChevronsUpDown, Copy, Gift, Heart, Instagram, Menu, Minus, Plus, Search, ShoppingBag, Sparkles, X } from 'lucide-react';
+import { ArrowDown, ArrowRight, Check, ChevronLeft, ChevronRight, ChevronsUpDown, Copy, Eye, Gift, Heart, Instagram, Menu, Minus, Plus, Search, ShoppingBag, Sparkles, X } from 'lucide-react';
 import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { ADMIN_LOGOUT_EVENT, adminLogin, adminLogout, adminRequest, createOrder, fetchProducts } from './api';
 
@@ -209,14 +209,13 @@ function AdminDataTable({ tab, orders, customers, page, setPage, onSelectOrder, 
     { accessorKey: 'total', header: ({ column }) => <AdminSortHeader column={column}>Tổng</AdminSortHeader>, cell: ({ row }) => money(row.original.total) },
     { accessorKey: 'status', header: 'Xử lý', cell: ({ row }) => <select value={row.original.status} onChange={(event) => onStatus(row.original._id, event.target.value)} aria-label={`Trạng thái ${row.original.orderCode}`}><option value={row.original.status}>{row.original.status}</option>{['confirmed', 'processing', 'completed', 'cancelled'].filter((value) => value !== row.original.status).map((value) => <option value={value} key={value}>{value}</option>)}</select> },
     { accessorKey: 'paymentStatus', header: 'Thanh toán', cell: ({ row }) => <button className={`payment-pill ${row.original.paymentStatus}`} onClick={() => onPayment(row.original._id, row.original.paymentStatus === 'paid' ? 'unpaid' : 'paid')}>{row.original.paymentStatus === 'paid' ? 'Đã trả' : 'Chưa trả'}</button> },
+    { id: 'actions', header: 'Thao tác', cell: ({ row }) => <button type="button" className="admin-row-action" onClick={() => onSelectOrder(row.original)} aria-label={`Xem chi tiết ${row.original.orderCode}`}><Eye size={15} /> Xem chi tiết</button> },
   ] : [
     { accessorFn: (row) => row.customer.fullName, id: 'fullName', header: ({ column }) => <AdminSortHeader column={column}>Khách hàng</AdminSortHeader>, cell: ({ row }) => <strong>{row.original.customer.fullName}</strong> },
     { accessorFn: (row) => row.customer.phone, id: 'phone', header: 'Liên hệ', cell: ({ row }) => <><span>{row.original.customer.phone}</span><small>{row.original.customer.email || 'Không có email'}</small></> },
     { accessorFn: (row) => row.customer.birthYear || 0, id: 'birthYear', header: ({ column }) => <AdminSortHeader column={column}>Năm sinh</AdminSortHeader>, cell: ({ row }) => row.original.customer.birthYear || '—' },
     { accessorFn: (row) => row.customer.gender || '', id: 'gender', header: 'Giới tính', cell: ({ row }) => row.original.customer.gender === 'female' ? 'Nữ' : row.original.customer.gender === 'male' ? 'Nam' : row.original.customer.gender === 'other' ? 'Khác' : 'Không muốn cung cấp' },
-    { accessorKey: 'orderCount', header: ({ column }) => <AdminSortHeader column={column}>Số đơn</AdminSortHeader> },
-    { accessorKey: 'paidValue', header: ({ column }) => <AdminSortHeader column={column}>Đã thanh toán</AdminSortHeader>, cell: ({ row }) => money(row.original.paidValue) },
-    { accessorKey: 'lastOrderAt', header: ({ column }) => <AdminSortHeader column={column}>Gần nhất</AdminSortHeader>, cell: ({ row }) => new Date(row.original.lastOrderAt).toLocaleDateString('vi-VN') },
+    { accessorFn: (row) => [row.customer.district, row.customer.province].filter(Boolean).join(', '), id: 'area', header: ({ column }) => <AdminSortHeader column={column}>Khu vực</AdminSortHeader>, cell: ({ getValue }) => getValue() || '—' },
   ], [isOrders, onPayment, onSelectOrder, onStatus]);
   const table = useReactTable({ data, columns, state: { sorting }, onSortingChange: setSorting, getCoreRowModel: getCoreRowModel(), getSortedRowModel: getSortedRowModel(), manualPagination: true, pageCount: meta.totalPages || 1 });
   const totalPages = meta.totalPages || 1;
